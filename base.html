@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="static/favicon.ico">
+    <title>CP Arena</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="main">
+        <nav>
+            <span><img width="200px" src="D:/webdev/CP Arena/images/logo.png" alt=""></span>
+            <div class="separation"></div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/">Contests</a></li>
+                <li><a href="/">Problems</a></li>
+                <li><a href="/">Profile</a></li>
+            </ul>
+            <div class="separation"></div>
+            <div class="nav-buttons">
+                <button onclick="location.href='login.html';" class="navbtn1">Login</button>
+                <button onclick="location.href='login.html?signup=true';" class="navbtn1">Sign Up</button>
+                <button onclick="location.href='login.html';" class="logoutbtn">Logout</button>
+            </div>
+            <div class="menu-icon" onclick="toggleMenu()">&#9776;</div> <!-- ☰ Menu Icon -->
+        </nav>
+        
+
+        <div class="mobile-menu">
+            <span class="close-btn" onclick="closeMenu()">&#10006;</span> <!-- ✖ Close Button -->
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/">Contests</a></li>
+                <li><a href="/">Leaderboard</a></li>
+                <li><a href="/">Profile</a></li>
+            </ul>
+            <div class="nav-buttons2">
+                <button onclick="location.href='login.html';" class="navbtn2">Login</button>
+                <button onclick="location.href='login.html?signup=true';" class="navbtn2">Sign Up</button>
+            </div>
+        </div>
+
+        
+        <section class="hero">
+            <img src="D:/webdev/CP Arena/images/a.png" alt="">
+            <h1>Welcome to <span>CP Arena</span> - Your Ultimate Coding Hub!</h1>
+            <p></p>Sharpen your skills, compete with the best, and become a coding champion!</p>
+            <a onclick="location.href='login.html?signup=true';" class="btn">Join Now</a>
+        </section>
+        <div class="classsecond">
+
+
+        <section class="about">
+            <h2>What is CP Arena?</h2>
+            <p>CP Arena is a platform designed for competitive programmers to practice, compete, and improve their coding skills. Whether you're a beginner or an expert, CP Arena has something for everyone. Join contests, solve problems, and climb the leaderboards to become the ultimate coding champion!</p>    
+        </section>
+
+
+        <section class="features">
+            <div class="feature">
+                <h2> Practice Contests</h2>
+                <p>Solve problems, track progress, and improve daily.</p>
+            </div>
+            <div class="feature">
+                <h2> Private Competitions</h2>
+                <p>Host and manage exclusive coding battles with friends or teams.</p>
+            </div>
+            <div class="feature">
+                <h2> Live Leaderboards</h2>
+                <p>Compete globally and climb the rankings.</p>
+            </div>
+            <div class="feature">
+                <h2> Friend Invitations</h2>
+                <p>Invite friends to join contests, form teams, and compete in both individual and group-based challenges.</p>
+            </div>
+            
+            <div class="feature">
+                <h2> Challenge Mode</h2>
+                <p>Test your problem-solving skills with time-bound challenges.</p>
+            </div>
+        </section>
+    </div>
+    
+        <footer>
+            <p>© 2025 CP Arena | Designed for Competitive Coders</p>
+        </footer>
+
+
+    </div>
+
+    <script src="static/script.js"></script>
+</body>
+</html>
