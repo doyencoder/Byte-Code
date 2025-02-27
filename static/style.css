@@ -393,6 +393,6 @@ footer {
         /* padding: 20px; */
     }
     .feature{
-        width: 90vw;
+        max-width: 90vw;
     }
 }
