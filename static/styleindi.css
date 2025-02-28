@@ -1,0 +1,178 @@
+@import url('https://fonts.googleapis.com/css2?family=Martel+Sans:wght@600&family=Poppins:wght@300;400;700&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    color: #16295d;
+
+}
+
+.main{
+    max-width: 100vw;
+}
+nav{
+    max-width: 100vw;
+    height: 20vh;
+    background-color: white;
+    margin: auto;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100px;
+    padding: 0 30px;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* General styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: beige;
+    color: #16295d;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container */
+.container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Headings */
+h1 {
+    font-size: 24px;    
+    color: #16295d;
+
+}
+
+h3 {
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+/* Labels */
+label {
+    font-size: 16px;
+    margin: 10px 0;
+    display: block;
+}
+
+/* Select dropdown */
+select {
+    width: 80%;
+    padding: 10px;
+    margin-top: 8px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #00154e;
+    background-color: #f1f2ff;
+    color: #00154e;
+}
+
+/* Buttons */
+button {
+    background-color: #172274;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+}
+
+#startButton {
+    display: block;
+    margin: 20px auto; /* Centers horizontally */
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    background-color: #1a237e; /* Dark blue */
+    color: white;
+    cursor: pointer;
+    text-align: center;
+}
+
+button:hover {
+    background-color: #020419;
+    transform: scale(1.0);
+}
+
+button:disabled {
+    background: #d3d8ff;
+    cursor: not-allowed;
+}
+
+/* Style for question container */
+.question-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    background: #f5f6ff;  /* Light background */
+    padding: 15px;
+    border-radius: 12px;
+    margin: 10px 0;
+    text-align: center; /* Align text in center */
+    border: 1px solid #00154e;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Align label and select in center */
+.question-container label {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: #2c2c54;
+    margin-bottom: 8px;
+}
+
+/* Style dropdown */
+.question-container select {
+    width: 80%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 2px solid #2c2c54;  /* Added border */
+    background-color: white;
+    text-align: center;
+    cursor: pointer;
+    appearance: auto; /* Show default dropdown arrow */
+}
+
+/* Dropdown hover & focus */
+.question-container select:hover, 
+.question-container select:focus {
+    border-color: #000b2b; /* Highlight border on hover/focus */
+    outline: none;
+}
+
+
+
+
+/* Note section */
+#note {
+    font-size: 14px;
+    font-weight: bold;
+    color: #16295d;
+
+    margin-top: 10px;
+}
+
+/* Countdown Timer */
+#countdown {
+    font-size: 18px;
+    color: #16295d;
+    font-weight: bold;
+}
