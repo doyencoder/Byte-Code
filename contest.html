@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="static/favicon.ico">
+    <title>Contests | CP Arena</title>
+    <link rel="stylesheet" href="static/stylecontest.css">
+    <link rel="stylesheet" href="static/style.css">
+    <script defer src="static/script.js"></script>
+</head>
+
+<body>
+
+    <div class="main">
+        <nav>
+            <span><img width="200px" src="D:/webdev/CP Arena/images/logo.png" alt=""></span>
+            <div class="separation"></div>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="contest.html" id="contestnav">Contests</a></li>
+                <li><a href="/">Problems</a></li>
+                <li><a href="profile.html">Profile</a></li>
+            </ul>
+            <div class="separation"></div>
+            <div class="nav-buttons">
+                <button onclick="location.href='login.html';" class="navbtn1">Login</button>
+                <button onclick="location.href='login.html?signup=true';" class="navbtn1">Sign Up</button>
+                <button onclick="location.href='login.html';" class="logoutbtn">Logout</button>
+            </div>
+            <div class="menu-icon" onclick="toggleMenu()">&#9776;</div> <!-- ☰ Menu Icon -->
+        </nav>
+
+
+        <div class="mobile-menu">
+            <span class="close-btn" onclick="closeMenu()">&#10006;</span> <!-- ✖ Close Button -->
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="contest.html" id="contestnav">Contests</a></li>
+                <li><a href="/">Problems</a></li>
+                <li><a href="profile.html">Profile</a></li>
+            </ul>
+            <div class="nav-buttons2">
+                <button onclick="location.href='login.html';" class="navbtn2">Login</button>
+                <button onclick="location.href='login.html?signup=true';" class="navbtn2">Sign Up</button>
+            </div>
+
+        </div>
+
+
+        <div class="container">
+            <section class="hero">
+                <h1>Choose Your Contest Type</h1>
+                <p>Sharpen your skills, compete with the best, and become a coding champion!</p>
+
+                <div class="card-container">
+                    <div class="card" onclick="location.href='individual.html';">
+                        <div id="icon">
+                            <img src="images/person-svgrepo-com.svg" alt="Products">
+                        </div>
+                        <h3>Individual</h3>
+                        <p id ="para">Compete solo and test your skills. Solve challenging problems at your own pace and showcase your coding prowess.</p>
+                    </div>
+                    <div class="card">
+                        <div id="icon">
+                            <img src="images/team.svg" alt="Products">
+                        </div>
+                        <h3>Team</h3>
+                        <p id ="para">Form a team and take on challenges together. Collaborate with peers, strategize, and solve problems efficiently.</p>
+                    </div>
+                    <div class="card">
+                        <div id="icon">
+                            <img src="images/i3.svg" alt="Products">
+                        </div>
+                        <h3>Compete with Others</h3>
+                        <p id ="para">Challenge others and climb the leaderboard. Engage in real-time battles and prove your skills against the best.</p>
+                    </div>
+                </div>
+            </section>
+            <!-- <h1>Choose Your Contest Type</h1>
+            <p>Select a contest type that best fits your competitive spirit. Whether you prefer to go solo, form a team,
+                or take on others, CP Arena offers an exciting coding experience for everyone!</p> -->
+        </div>
+
+        <div class="contest">
+            <h2>Upcoming Contests</h2>
+            <p>Stay ahead of the competition! Explore our list of upcoming contests, register, and prepare for the
+                ultimate coding showdown.</p>
+            <div class="contest-container" id="contest-container">
+                <!-- Contests will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 CP Arena | Designed for Competitive Coders</p>
+        </footer>
+    </div>
+
+
+</body>
+
+</html>
