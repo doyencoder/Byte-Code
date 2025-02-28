@@ -82,6 +82,10 @@ nav .separation{
     gap: 7px;
     transition: background-color 0.25s ease-in-out;
 }
+.logoutbtn:hover{
+    background-color: #365194;
+    color: white;
+}
 .navbtn2 {
     padding: 0 18px;
     font-weight: 400;
@@ -200,8 +204,9 @@ nav .separation{
 
 .hero p {
     font-size: 18px;
-    margin: 15px 0;
+    padding-bottom: 50px
 }
+
 .hero h1{
     font-size: 48px;
     font-weight: bolder;
@@ -209,7 +214,8 @@ nav .separation{
 .hero img {
     width: 400px;
     height: auto;
-    margin-top: 20px;
+    margin-top: -50px;
+    cursor: pointer;
 }
 
 
@@ -225,6 +231,10 @@ nav .separation{
     border-radius: 50px 50px 0 0;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.305);
 }
+#contestnav {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+}
 .about h2 {
     margin-bottom: 20px;
     font-size: 36px;
@@ -236,6 +246,7 @@ nav .separation{
 }
 
 .btn {
+
     display: inline-block;
     width: 90px;
     text-align: center;
@@ -272,6 +283,7 @@ nav .separation{
     align-items: center;
     text-align: center;
     background: white;  
+    color: #16295d;
     padding: 20px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
@@ -280,6 +292,7 @@ nav .separation{
     font-size: 20px;
     margin-bottom: 20px;
 }
+
 
 /* Call to Action */
 .cta {
@@ -382,6 +395,9 @@ footer {
         justify-content: center;
         align-items: center;
         text-align: center;
+    }
+    .about{
+        padding: 30px;
     }
     .features {
         /* display: grid; */
