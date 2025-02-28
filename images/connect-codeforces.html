@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="static/favicon.ico">
+
+    <title>Connect Codeforces</title>
+    <style>
+        #navbar {
+            height: auto;
+        }
+        .zero{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-top: 50px;
+        }
+
+        .cf-container {
+            background: white;
+            padding: 20px;
+            color:#00154e;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width:30vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        input {
+            width: 80%;
+            max-width: 400px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .canva{
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        button {
+            background-color: #082678;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #000d2f;
+        }
+    </style>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+
+    <div class="main" id="navbar">
+        <nav>
+            <span><img width="200px" src="D:/webdev/CP Arena/images/logo.png" alt=""></span>
+            <div class="separation"></div>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="contest.html">Contests</a></li>
+                <li><a href="/">Problems</a></li>
+                <li><a href="profile.html" id="contestnav">Profile</a></li>
+            </ul>
+            <div class="separation"></div>
+            <div class="nav-buttons">
+                <button onclick="location.href='base.html';" class="logoutbtn" style="display: flex;">Logout</button>
+            </div>
+            <div class="menu-icon" onclick="toggleMenu()">&#9776;</div> <!-- ☰ Menu Icon -->
+        </nav>
+
+
+        <div class="mobile-menu">
+            <span class="close-btn" onclick="closeMenu()">&#10006;</span> <!-- ✖ Close Button -->
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="contest.html">Contests</a></li>
+                <li><a href="/">Problems</a></li>
+                <li><a href="profile.html">Profile</a></li>
+            </ul>
+            <div class="nav-buttons2">
+                <button onclick="location.href='login.html';" class="logoutbtn" style="display: flex;">Logout</button>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="zero">
+        <div class="cf-container">
+            <input type="text" id="cf-input" placeholder="Enter your CF Handle">
+    
+            <div class="button-group">
+                <button onclick="saveCFHandle()">Submit Request</button>
+                <button onclick="window.location.href='profile.html'">View Profile</button>
+            </div>
+            <div class="canva">
+                <p>
+                    Confused? Check out these 
+                    <button class="guide-btn">Detailed Steps</button>
+                </p>
+            </div>
+    
+            
+        </div>
+    </div>
+    
+    
+
+    <script>
+        function saveCFHandle() {
+            const cfHandle = document.getElementById("cf-input").value.trim();
+            if (cfHandle === "") {
+                alert("Please enter a valid Codeforces handle.");
+                return;
+            }
+            localStorage.setItem("cfHandle", cfHandle);
+            alert("Codeforces handle saved!");
+        }
+
+        // Load handle if already set
+        window.onload = function () {
+            const savedHandle = localStorage.getItem("cfHandle");
+            if (savedHandle) {
+                document.getElementById("cf-input").value = savedHandle;
+            }
+        };
+    </script>
+</body>
+
+</html>

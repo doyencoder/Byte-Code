@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="static/favicon.ico">
+    <title>Profile Page</title>
+    <link rel="stylesheet" href="static/styleprofile.css">
+    <link rel="stylesheet" href="static/style.css">
+
+</head>
+
+<body>
+    <div class="main" id="navbar">
+        <nav>
+            <span><img width="200px" src="D:/webdev/CP Arena/images/logo.png" alt=""></span>
+            <div class="separation"></div>
+            <ul class="nav-links">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="contest.html">Contests</a></li>
+                <li><a href="/">Problems</a></li>
+                <li><a href="profile.html" id="contestnav">Profile</a></li>
+            </ul>
+            <div class="separation"></div>
+            <div class="nav-buttons">
+                <button onclick="location.href='base.html';" class="logoutbtn" style="display: flex;">Logout</button>
+            </div>
+            <div class="menu-icon" onclick="toggleMenu()">&#9776;</div> <!-- ☰ Menu Icon -->
+        </nav>
+
+
+        <div class="mobile-menu">
+            <span class="close-btn" onclick="closeMenu()">&#10006;</span> <!-- ✖ Close Button -->
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="contest.html">Contests</a></li>
+                <li><a href="/">Problems</a></li>
+                <li><a href="profile.html">Profile</a></li>
+            </ul>
+            <div class="nav-buttons2">
+                <button onclick="location.href='login.html';" class="logoutbtn" style="display: flex;">Logout</button>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="profile-container">
+        <div class="profile">
+            <div class="userbox">
+                <div class="profile-pic" id="profile-initials"></div>
+                <h2 id="user-name">User Name</h2>
+                <p id="user-email">user@example.com</p>
+            </div>
+    
+    
+            <div class="zero">
+                <div class="info-box">
+                    <label>Institution</label>
+                    <p id="institution">--</p>
+                </div>
+                <div class="info-box">
+                    <label>Country</label>
+                    <p id="country">--</p>
+                </div>
+                <div class="info-box">
+                    <label>Codeforces Handle</label>
+                    <p id="cf-handle">--</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="edit">
+            <button onclick="window.location.href='edit-profile.html'">Edit Profile</button>
+            <button onclick="window.location.href='connect-codeforces.html'">Connect Codeforces</button>
+        </div>
+    </div>
+
+
+    <script>
+        function loadProfileData() {
+            const name = localStorage.getItem("name") || "User Name";
+            const institution = localStorage.getItem("institution") || "--";
+            const country = localStorage.getItem("country") || "--";
+
+            const cfHandle = localStorage.getItem("cfHandle") || "--";
+
+            document.getElementById("user-name").textContent = name;
+            document.getElementById("institution").textContent = institution;
+            document.getElementById("country").textContent = country;
+            document.getElementById("cf-handle").textContent = cfHandle;
+
+            // Set initials for profile picture
+            const initials = name.trim().split(" ").map(word => word.charAt(0)).join("").toUpperCase();
+            document.getElementById("profile-initials").textContent = initials;
+        }
+
+        window.onload = loadProfileData;
+    </script>
+</body>
+
+</html>
