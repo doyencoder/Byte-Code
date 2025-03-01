@@ -51,7 +51,7 @@ nav .separation{
     background-color: hsl(224, 100%, 94%);
     border-radius: 5px;
 }
-.navbtn1 {
+#navbtn1,#signupBtn {
     padding: 3px 18px;
     font-weight: 400;
     font-size: medium;
@@ -101,7 +101,11 @@ nav .separation{
     gap: 7px;
     transition: background-color 0.25s ease-in-out;
 }
-.navbtn1:hover {
+#navbtn1:hover {
+    background-color: #365194;
+    color: white;
+}
+#signupBtn:hover {
     background-color: #365194;
     color: white;
 }

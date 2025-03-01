@@ -23,9 +23,17 @@
             </ul>
             <div class="separation"></div>
             <div class="nav-buttons">
-                <button onclick="location.href='login.html';" class="navbtn1">Login</button>
-                <button onclick="location.href='login.html?signup=true';" class="navbtn1">Sign Up</button>
-                <button onclick="location.href='login.html';" class="logoutbtn">Logout</button>
+                <div class="login">
+                    <div class="button-field">
+                        <button id="navbtn1" onclick="location.href='login.html';">Login</button>
+                    </div>
+                </div>
+                <div class="signup">
+                    <div class="button-field">
+                        <button id="signupBtn" onclick="location.href='login.html?signup=true';">Sign Up</button>
+                    </div>
+                </div>                
+                
             </div>
             <div class="menu-icon" onclick="toggleMenu()">&#9776;</div> <!-- ☰ Menu Icon -->
         </nav>

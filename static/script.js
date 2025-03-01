@@ -100,34 +100,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  function checkAuthAndNavigate(page) {
-      if (!token) {
-          alert("You must log in or sign up first!");
-          window.location.href = "login.html";
-      } else {
-          window.location.href = page;
-      }
-  }
+    function checkAuthAndNavigate(page) {
+        if (!token) {
+            alert("You must log in or sign up first!");
+            window.location.href = "login.html";
+        } else {
+            window.location.href = page;
+        }
+    }
 
-  document.querySelector("#homeLink").addEventListener("click", (event) => {
-      event.preventDefault();
-      checkAuthAndNavigate("home.html");
-  });
+    document.querySelector("#homeLink").addEventListener("click", (event) => {
+        event.preventDefault();
+        checkAuthAndNavigate("home.html");
+    });
 
-  document.querySelector("#contestLink").addEventListener("click", (event) => {
-      event.preventDefault();
-      checkAuthAndNavigate("contest.html");
-  });
+    document.querySelector("#contestLink").addEventListener("click", (event) => {
+        event.preventDefault();
+        checkAuthAndNavigate("contest.html");
+    });
 
-  document.querySelector("#problemLink").addEventListener("click", (event) => {
-      event.preventDefault();
-      checkAuthAndNavigate("problem.html");
-  });
+    document.querySelector("#problemLink").addEventListener("click", (event) => {
+        event.preventDefault();
+        checkAuthAndNavigate("problem.html");
+    });
 
-  document.querySelector("#profileLink").addEventListener("click", (event) => {
-      event.preventDefault();
-      checkAuthAndNavigate("profile.html");
-  });
+    document.querySelector("#profileLink").addEventListener("click", (event) => {
+        event.preventDefault();
+        checkAuthAndNavigate("profile.html");
+    });
 });
