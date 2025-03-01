@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    <div class="main">
+    <div class="main" id="navbar">
         <nav>
             <span><img width="200px" src="images/logo.png" alt=""></span>
             <div class="separation"></div>
@@ -26,9 +26,7 @@
             </ul>
             <div class="separation"></div>
             <div class="nav-buttons">
-                <button onclick="location.href='login.html';" class="navbtn1">Login</button>
-                <button onclick="location.href='login.html?signup=true';" class="navbtn1">Sign Up</button>
-                <button onclick="location.href='login.html';" class="logoutbtn">Logout</button>
+                <button onclick="location.href='base.html';" class="logoutbtn" style="display: flex;">Logout</button>
             </div>
             <div class="menu-icon" onclick="toggleMenu()">&#9776;</div> <!-- ☰ Menu Icon -->
         </nav>
@@ -38,119 +36,121 @@
             <span class="close-btn" onclick="closeMenu()">&#10006;</span> <!-- ✖ Close Button -->
             <ul>
                 <li><a href="home.html">Home</a></li>
-                <li><a href="contest.html" id="contestnav">Contests</a></li>
+                <li><a href="contest.html">Contests</a></li>
                 <li><a href="problem.html">Problems</a></li>
                 <li><a href="profile.html">Profile</a></li>
             </ul>
             <div class="nav-buttons2">
-                <button onclick="location.href='login.html';" class="navbtn2">Login</button>
-                <button onclick="location.href='login.html?signup=true';" class="navbtn2">Sign Up</button>
+                <button onclick="location.href='login.html';" class="logoutbtn" style="display: flex;">Logout</button>
+
             </div>
-
         </div>
-    <div class="container">
-        <h1>Set Up Your Contest</h1>
+        
+        <div class="container">
+            <h1>Set Up Your Contest</h1>
 
-        <label for="numQuestions">Choose Number of Questions:</label>
-        <select id="numQuestions">
-            <option value="" disabled selected>Select number of questions</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-        </select>
+            <label for="numQuestions">Choose Number of Questions:</label>
+            <select id="numQuestions">
+                <option value="" disabled selected>Select number of questions</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
 
-        <button onclick="generateLevelSelection()">Next</button>
+            <button onclick="generateLevelSelection()">Next</button>
 
-        <div id="levelSelection"></div>
+            <div id="levelSelection"></div>
 
-        <h3>Duration: <span>2 Hours (120 Minutes)</span></h3>
+            <h3>Duration: <span>2 Hours (120 Minutes)</span></h3>
 
-        <p id="note" style="display:none; color: red;">
-            The contest will start in <strong><span id="countdown">15</span></strong> seconds. Please do not refresh the
-            page.
-        </p>
+            <p id="note" style="display:none; color: red;">
+                The contest will start in <strong><span id="countdown">15</span></strong> seconds. Please do not refresh
+                the
+                page.
+            </p>
 
-        <button id="startButton" style="display:none;" onclick="startCountdown()">Start Contest</button>
+            <button id="startButton" style="display:none;" onclick="startCountdown()">Start Contest</button>
+        </div>
     </div>
 
-    <script>
-        function generateLevelSelection() {
-            let num = document.getElementById("numQuestions").value;
-            let levelDiv = document.getElementById("levelSelection");
-            levelDiv.innerHTML = "";
+        <script>
+            function generateLevelSelection() {
+                let num = document.getElementById("numQuestions").value;
+                let levelDiv = document.getElementById("levelSelection");
+                levelDiv.innerHTML = "";
 
-            if (!num) {
-                alert("Please select the number of questions.");
-                return;
-            }
-
-            for (let i = 1; i <= num; i++) {
-                let div = document.createElement("div");
-                div.className = "question-container";
-
-                let label = document.createElement("label");
-                label.textContent = `Question ${i} Difficulty (Rating):`;
-
-                let select = document.createElement("select");
-                select.id = `question${i}`;
-
-                // Generate difficulty options (800 to 2000 in steps of 100)
-                for (let rating = 800; rating <= 2000; rating += 100) {
-                    let option = document.createElement("option");
-                    option.value = rating;
-                    option.textContent = rating;
-                    select.appendChild(option);
+                if (!num) {
+                    alert("Please select the number of questions.");
+                    return;
                 }
 
-                div.appendChild(label);
-                div.appendChild(select);
-                levelDiv.appendChild(div);
-            }
+                for (let i = 1; i <= num; i++) {
+                    let div = document.createElement("div");
+                    div.className = "question-container";
 
-            document.getElementById("startButton").style.display = "block";
-        }
+                    let label = document.createElement("label");
+                    label.textContent = `Question ${i} Difficulty (Rating):`;
 
-        function startCountdown() {
-            let num = document.getElementById("numQuestions").value;
-            if (!num) {
-                alert("Please select the number of questions.");
-                return;
-            }
+                    let select = document.createElement("select");
+                    select.id = `question${i}`;
 
-            // Store questions and difficulty levels in localStorage
-            let questionData = [];
-            for (let i = 1; i <= num; i++) {
-                let difficulty = document.getElementById(`question${i}`).value;
-                questionData.push({ question: i, difficulty: difficulty });
-            }
-            localStorage.setItem("contestData", JSON.stringify(questionData));
+                    // Generate difficulty options (800 to 2000 in steps of 100)
+                    for (let rating = 800; rating <= 2000; rating += 100) {
+                        let option = document.createElement("option");
+                        option.value = rating;
+                        option.textContent = rating;
+                        select.appendChild(option);
+                    }
 
-            let startButton = document.getElementById("startButton");
-            startButton.disabled = true;
-
-            // Prevent refresh warning
-            window.onbeforeunload = function () {
-                return "Contest is starting, please do not refresh!";
-            };
-
-            document.getElementById("note").style.display = "block";
-
-            let timeLeft = 15;
-            let countdown = document.getElementById("countdown");
-
-            let timer = setInterval(() => {
-                timeLeft--;
-                countdown.textContent = timeLeft;
-                if (timeLeft === 0) {
-                    clearInterval(timer);
-                    window.onbeforeunload = null;
-                    window.location.href = "contestpage.html"; // Redirect to contest page
+                    div.appendChild(label);
+                    div.appendChild(select);
+                    levelDiv.appendChild(div);
                 }
-            }, 1000);
-        }
 
-    </script>
+                document.getElementById("startButton").style.display = "block";
+            }
+
+            function startCountdown() {
+                let num = document.getElementById("numQuestions").value;
+                if (!num) {
+                    alert("Please select the number of questions.");
+                    return;
+                }
+
+                // Store questions and difficulty levels in localStorage
+                let questionData = [];
+                for (let i = 1; i <= num; i++) {
+                    let difficulty = document.getElementById(`question${i}`).value;
+                    questionData.push({ question: i, difficulty: difficulty });
+                }
+                localStorage.setItem("contestData", JSON.stringify(questionData));
+
+                let startButton = document.getElementById("startButton");
+                startButton.disabled = true;
+
+                // Prevent refresh warning
+                window.onbeforeunload = function () {
+                    return "Contest is starting, please do not refresh!";
+                };
+
+                document.getElementById("note").style.display = "block";
+
+                let timeLeft = 15;
+                let countdown = document.getElementById("countdown");
+
+                let timer = setInterval(() => {
+                    timeLeft--;
+                    countdown.textContent = timeLeft;
+                    if (timeLeft === 0) {
+                        clearInterval(timer);
+                        window.onbeforeunload = null;
+                        window.location.href = "contestpage.html"; // Redirect to contest page
+                    }
+                }, 1000);
+            }
+
+        </script>
 </body>
 
 </html>

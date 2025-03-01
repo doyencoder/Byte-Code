@@ -13,7 +13,7 @@
 
 <body>
 
-    <div class="main">
+    <div class="main" id="navbar">
         <nav>
             <span><img width="200px" src="images/logo.png" alt=""></span>
             <div class="separation"></div>
@@ -25,9 +25,7 @@
             </ul>
             <div class="separation"></div>
             <div class="nav-buttons">
-                <button onclick="location.href='login.html';" class="navbtn1">Login</button>
-                <button onclick="location.href='login.html?signup=true';" class="navbtn1">Sign Up</button>
-                <button onclick="location.href='login.html';" class="logoutbtn">Logout</button>
+                <button onclick="location.href='base.html';" class="logoutbtn" style="display: flex;">Logout</button>
             </div>
             <div class="menu-icon" onclick="toggleMenu()">&#9776;</div> <!-- ☰ Menu Icon -->
         </nav>
@@ -36,16 +34,15 @@
         <div class="mobile-menu">
             <span class="close-btn" onclick="closeMenu()">&#10006;</span> <!-- ✖ Close Button -->
             <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="contest.html" id="contestnav">Contests</a></li>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="contest.html">Contests</a></li>
                 <li><a href="problem.html">Problems</a></li>
                 <li><a href="profile.html">Profile</a></li>
             </ul>
             <div class="nav-buttons2">
-                <button onclick="location.href='login.html';" class="navbtn2">Login</button>
-                <button onclick="location.href='login.html?signup=true';" class="navbtn2">Sign Up</button>
-            </div>
+                <button onclick="location.href='login.html';" class="logoutbtn" style="display: flex;">Logout</button>
 
+            </div>
         </div>
 
 
