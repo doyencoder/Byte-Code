@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contest | CP Arena</title>
-    <link rel="stylesheet" href="static/stylecontestpage.css">
+    <link rel="icon" type="image/png" href="static/favicon.ico">
+    <title>Contests | CP Arena</title>
+    <link rel="stylesheet" href="static/stylecontest.css">
     <link rel="stylesheet" href="static/style.css">
-
+    <script defer src="static/script.js"></script>
 </head>
 
 <body>
@@ -35,7 +36,7 @@
         <div class="mobile-menu">
             <span class="close-btn" onclick="closeMenu()">&#10006;</span> <!-- ✖ Close Button -->
             <ul>
-                <li><a href="home.html">Home</a></li>
+                <li><a href="/">Home</a></li>
                 <li><a href="contest.html" id="contestnav">Contests</a></li>
                 <li><a href="problem.html">Problems</a></li>
                 <li><a href="profile.html">Profile</a></li>
@@ -46,83 +47,57 @@
             </div>
 
         </div>
-        <div class="zero">
-            <div id="timer-box" class="timer">
-                <p><strong>Time Left:</strong> <span id="timer">02:00:00</span></p>
-            </div>
-            <div id="contest-container" class="box">
-                <!-- Left side: Problems Table -->
-                <div id="problems-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Rating</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="problems-list"></tbody>
-                    </table>
-                </div>
-            </div>
-            <button>Refresh</button>
-            
 
+
+        <div class="container">
+            <section class="hero">
+                <h1>Choose Your Contest Type</h1>
+                <p>Sharpen your skills, compete with the best, and become a coding champion!</p>
+
+                <div class="card-container">
+                    <div class="card" onclick="location.href='individual.html';">
+                        <div id="icon">
+                            <img src="images/person-svgrepo-com.svg" alt="Products">
+                        </div>
+                        <h3>Individual</h3>
+                        <p id ="para">Compete solo and test your skills. Solve challenging problems at your own pace and showcase your coding prowess.</p>
+                    </div>
+                    <div class="card">
+                        <div id="icon">
+                            <img src="images/team.svg" alt="Products">
+                        </div>
+                        <h3>Team</h3>
+                        <p id ="para">Form a team and take on challenges together. Collaborate with peers, strategize, and solve problems efficiently.</p>
+                    </div>
+                    <div class="card">
+                        <div id="icon">
+                            <img src="images/i3.svg" alt="Products">
+                        </div>
+                        <h3>Compete with Others</h3>
+                        <p id ="para">Challenge others and climb the leaderboard. Engage in real-time battles and prove your skills against the best.</p>
+                    </div>
+                </div>
+            </section>
+            <!-- <h1>Choose Your Contest Type</h1>
+            <p>Select a contest type that best fits your competitive spirit. Whether you prefer to go solo, form a team,
+                or take on others, CP Arena offers an exciting coding experience for everyone!</p> -->
         </div>
+
+        <div class="contest">
+            <h2>Upcoming Contests</h2>
+            <p>Stay ahead of the competition! Explore our list of upcoming contests, register, and prepare for the
+                ultimate coding showdown.</p>
+            <div class="contest-container" id="contest-container">
+                <!-- Contests will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 CP Arena | Designed for Competitive Coders</p>
+        </footer>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // localStorage se contest ka data fetch karo
-            let contestData = JSON.parse(localStorage.getItem("contestData")) || [];
 
-            let problemsList = document.getElementById("problems-list");
-
-            function loadProblems() {
-                problemsList.innerHTML = "";
-                contestData.forEach((q, index) => {
-                    let row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td><a href="#">Problem ${index + 1}</a></td>
-                        <td style="background-color: ${getColor(q.difficulty)}">${q.difficulty}</td>
-                        <td style="background-color: lightpink">Pending</td>
-                    `;
-                    problemsList.appendChild(row);
-                });
-            }
-
-            function getColor(rating) {
-                if (rating < 1200) return "rgb(204, 204, 204)";
-                if (rating < 1400) return "rgb(119, 255, 119)";
-                if (rating < 1600) return "rgb(119, 221, 187)";
-                if (rating < 1900) return "rgb(170, 170, 255)"
-                return "violet";
-            }
-
-            loadProblems();
-
-            // Timer Logic (2 Hours Countdown)
-            let timeLeft = 7200;
-            function updateTimer() {
-                let hours = Math.floor(timeLeft / 3600);
-                let minutes = Math.floor((timeLeft % 3600) / 60);
-                let seconds = timeLeft % 60;
-                document.getElementById("timer").textContent =
-                    `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-                if (timeLeft > 0) {
-                    timeLeft--;
-                    setTimeout(updateTimer, 1000);
-                }
-            }
-            updateTimer();
-
-            // Refresh Button
-            document.getElementById("refresh-btn").addEventListener("click", loadProblems);
-        });
-
-    </script>
 </body>
 
 </html>
