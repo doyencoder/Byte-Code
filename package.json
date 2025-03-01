@@ -1,0 +1,20 @@
+{
+  "name": "cp-arena",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://doyencoder: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@github.com/doyencoder/CP-ARENA.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/doyencoder/CP-ARENA/issues"
+  },
+  "homepage": "https://github.com/doyencoder/CP-ARENA#readme",
+  "description": ""
+}

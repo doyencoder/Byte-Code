@@ -81,3 +81,53 @@ document.querySelector(".signup .button-field button").addEventListener("click",
     }
 });
 });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelector(".logoutbtn").addEventListener("click", async function () {
+      try {
+          await fetch("http://127.0.0.1:5000/api/auth/logout", { method: "POST" });
+
+          localStorage.removeItem("token");  // Clear JWT
+          alert("You have been logged out!");
+          window.location.href = "base.html";  // Redirect to base.html
+      } catch (error) {
+          console.error("Logout failed", error);
+          alert("Error logging out. Please try again.");
+      }
+  });
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const token = localStorage.getItem("token");
+
+  function checkAuthAndNavigate(page) {
+      if (!token) {
+          alert("You must log in or sign up first!");
+          window.location.href = "login.html";
+      } else {
+          window.location.href = page;
+      }
+  }
+
+  document.querySelector("#homeLink").addEventListener("click", (event) => {
+      event.preventDefault();
+      checkAuthAndNavigate("home.html");
+  });
+
+  document.querySelector("#contestLink").addEventListener("click", (event) => {
+      event.preventDefault();
+      checkAuthAndNavigate("contest.html");
+  });
+
+  document.querySelector("#problemLink").addEventListener("click", (event) => {
+      event.preventDefault();
+      checkAuthAndNavigate("problem.html");
+  });
+
+  document.querySelector("#profileLink").addEventListener("click", (event) => {
+      event.preventDefault();
+      checkAuthAndNavigate("profile.html");
+  });
+});
