@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="static/favicon.ico">
+    <title>Problem Analytics</title>
+    <link rel="stylesheet" href="static/styleproblem.css">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="zero">
+        <div class="main" id="navbar">
+            <nav>
+                <span><img width="200px" src="images/logo.png" alt=""></span>
+                <div class="separation"></div>
+                <ul class="nav-links">
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="contest.html">Contests</a></li>
+                    <li><a href="problem.html" id="contestnav">Problems</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                </ul>
+                <div class="separation"></div>
+                <div class="nav-buttons">
+                    <button onclick="location.href='base.html';" class="logoutbtn" style="display: flex;">Logout</button>
+                </div>
+                <div class="menu-icon" onclick="toggleMenu()">&#9776;</div> <!-- ☰ Menu Icon -->
+            </nav>
+    
+    
+            <div class="mobile-menu">
+                <span class="close-btn" onclick="closeMenu()">&#10006;</span> <!-- ✖ Close Button -->
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="contest.html">Contests</a></li>
+                    <li><a href="problem.html">Problems</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                </ul>
+                <div class="nav-buttons2">
+                    <button onclick="location.href='login.html';" class="logoutbtn" style="display: flex;">Logout</button>
+    
+                </div>
+            </div>
+        </div>
+    
+        <div class="container">
+            <!-- Problem List -->
+            <div class="problem-list">
+                <h2>Problems</h2>
+                <button class="refresh-btn" onclick="refreshStatus()">🔄 Refresh Status</button>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Rating</th>
+                            <th>Status</th>
+                            <th>Link</th>
+                        </tr>
+                    </thead>
+                    <tbody id="problemTable">
+                        <!-- Problems will be added dynamically -->
+                    </tbody>
+                </table>
+            </div>
+    
+            <!-- Filters & Charts -->
+            <div class="analytics-section">    
+                <!-- Filters -->
+                <label for="ratingFilter">Choose Rating:</label>
+                <select id="ratingFilter" onchange="filterProblems()">
+                    <option value="all">All</option>
+                    <option value="800">800</option>
+                    <option value="900">900</option>
+                    <option value="1000">1000</option>
+                    <option value="1100">1100</option>
+                    <option value="1200">1200</option>
+                    <option value="1300">1300</option>
+                    <option value="1400">1400</option>
+                    <option value="1500">1500</option>
+                </select>
+    
+                <label for="statusFilter">Problem Status:</label>
+                <select id="statusFilter" onchange="filterProblems()">
+                    <option value="all">All</option>
+                    <option value="solved">Solved</option>
+                    <option value="unsolved">Unsolved</option>
+                </select>
+    
+                <h2>Analytics</h2>
+
+                <!-- Chart Container -->
+                <canvas id="solvedChart"></canvas>
+                <canvas id="ratingChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <script>
+        // Sample Problem Data
+        const problems = [
+            { title: "A+B Problem", rating: 800, status: "unsolved", link: "https://codeforces.com/problemset/problem/1/A" },
+            { title: "Two Sum", rating: 1000, status: "solved", link: "https://codeforces.com/problemset/problem/2/B" },
+            { title: "Binary Search", rating: 1200, status: "unsolved", link: "https://codeforces.com/problemset/problem/3/C" },
+            { title: "DFS Basics", rating: 1400, status: "solved", link: "https://codeforces.com/problemset/problem/4/D" },
+            { title: "Graph Shortest Path", rating: 1500, status: "unsolved", link: "https://codeforces.com/problemset/problem/5/E" },
+            { title: "Sorting Algorithm", rating: 1100, status: "solved", link: "https://codeforces.com/problemset/problem/6/F" },
+        ];
+
+        // Function to display problems
+        function displayProblems(problemList) {
+            const tableBody = document.getElementById("problemTable");
+            tableBody.innerHTML = "";
+
+            problemList.forEach(problem => {
+                const row = `<tr>
+            <td>${problem.title}</td>
+            <td>${problem.rating}</td>
+            <td class="${problem.status}">${problem.status.charAt(0).toUpperCase() + problem.status.slice(1)}</td>
+            <td><a href="${problem.link}" target="_blank">Solve</a></td>
+        </tr>`;
+                tableBody.innerHTML += row;
+            });
+
+            updateCharts();
+        }
+
+        // Function to filter problems based on rating & status
+        function filterProblems() {
+            const selectedRating = document.getElementById("ratingFilter").value;
+            const selectedStatus = document.getElementById("statusFilter").value;
+
+            let filteredProblems = problems;
+
+            if (selectedRating !== "all") {
+                filteredProblems = filteredProblems.filter(problem => problem.rating == selectedRating);
+            }
+
+            if (selectedStatus !== "all") {
+                filteredProblems = filteredProblems.filter(problem => problem.status === selectedStatus);
+            }
+
+            displayProblems(filteredProblems);
+        }
+
+        // Function to update the charts
+        function updateCharts() {
+            const solvedCount = problems.filter(p => p.status === "solved").length;
+            const unsolvedCount = problems.filter(p => p.status === "unsolved").length;
+
+            const ratingCounts = {};
+            problems.forEach(problem => {
+                if (!ratingCounts[problem.rating]) ratingCounts[problem.rating] = 0;
+                ratingCounts[problem.rating]++;
+            });
+
+            // Solved/Unsolved Chart
+            new Chart(document.getElementById("solvedChart"), {
+                type: "pie",
+                data: {
+                    labels: ["Solved", "Unsolved"],
+                    datasets: [{
+                        data: [solvedCount, unsolvedCount],
+                        backgroundColor: ["#28a745", "#dc3545"]
+                    }]
+                }
+            });
+
+            // Rating Distribution Chart
+            new Chart(document.getElementById("ratingChart"), {
+                type: "bar",
+                data: {
+                    labels: Object.keys(ratingCounts),
+                    datasets: [{
+                        label: "Number of Problems",
+                        data: Object.values(ratingCounts),
+                        backgroundColor: "#007bff"
+                    }]
+                }
+            });
+        }
+
+        // Initialize with all problems
+        document.addEventListener("DOMContentLoaded", () => {
+            displayProblems(problems);
+        });
+
+    </script>
+</body>
+
+</html>
