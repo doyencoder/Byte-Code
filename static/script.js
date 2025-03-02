@@ -38,11 +38,27 @@ if (urlParams.get("signup") === "true") {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  function isValidEmail(email) {
+    // Regular Expression for basic email validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  }
+  function isValidPassword(password) {
+    // Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 digit, and 1 special character
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!])[A-Za-z\d@#$%^&*!]{8,}$/;
+    return passwordRegex.test(password);
+  }
+
   document.querySelector(".login .button-field button").addEventListener("click", async function (event) {
     event.preventDefault();
 
     let email = document.querySelector(".login input[type='email']").value;
     let password = document.querySelector(".login input[type='password']").value;
+
+    if (!email || !password) {
+      alert("Email and Password cannot be empty!");
+      return;
+    }
 
     let response = await fetch("http://127.0.0.1:5000/api/auth/login", {
       method: "POST",
@@ -65,6 +81,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let email = document.querySelector(".signup input[type='email']").value;
     let password = document.querySelector(".signup input[type='password']").value;
+
+    if (!email || !password) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    if (!isValidEmail(email)) {
+      alert("Please enter a valid email address (e.g., user@example.com)!");
+      return;
+    }
+    if (!isValidPassword(password)) {
+      alert("Password must be at least 8 characters long, include one uppercase, one lowercase, one digit, and one special character (@, #, $, etc.)");
+      return;
+    }
 
     let response = await fetch("http://127.0.0.1:5000/api/auth/signup", {
       method: "POST",
