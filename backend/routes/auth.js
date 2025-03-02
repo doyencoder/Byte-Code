@@ -9,6 +9,8 @@ const router = express.Router();
 router.post("/signup", async (req, res) => {
     const { email, password } = req.body;
 
+    console.log("Email received from frontend:", email);
+
     try {
         let user = await User.findOne({ email });
         if (user) return res.status(400).json({ error: "User already exists" });
@@ -29,8 +31,11 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
+    console.log("🔹 [Backend] Email received from frontend:", email);
+
     try {
         const user = await User.findOne({ email });
+        console.log("User found in DB:", user);
         if (!user) return res.status(400).json({ error: "Invalid credentials" });
 
         const isMatch = await bcrypt.compare(password, user.password);
@@ -38,7 +43,7 @@ router.post("/login", async (req, res) => {
 
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-        res.json({ token });
+        res.json({ token, email: user.email });
     } catch (err) {
         res.status(500).json({ error: "Server error" });
     }

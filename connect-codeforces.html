@@ -11,7 +11,8 @@
         #navbar {
             height: auto;
         }
-        .zero{
+
+        .zero {
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -22,11 +23,11 @@
         .cf-container {
             background: white;
             padding: 20px;
-            color:#00154e;
+            color: #00154e;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            width:30vw;
+            width: 30vw;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -49,7 +50,7 @@
             gap: 10px;
         }
 
-        .canva{
+        .canva {
             padding-top: 20px;
             display: flex;
             flex-direction: column;
@@ -94,7 +95,6 @@
             <div class="menu-icon" onclick="toggleMenu()">&#9776;</div> <!-- ☰ Menu Icon -->
         </nav>
 
-
         <div class="mobile-menu">
             <span class="close-btn" onclick="closeMenu()">&#10006;</span> <!-- ✖ Close Button -->
             <ul>
@@ -113,42 +113,82 @@
     <div class="zero">
         <div class="cf-container">
             <input type="text" id="cf-input" placeholder="Enter your CF Handle">
-    
+
             <div class="button-group">
-                <button onclick="saveCFHandle()">Submit Request</button>
+                <button onclick="saveAndFetchCFData()">Submit Request</button>
                 <button onclick="window.location.href='profile.html'">View Profile</button>
             </div>
             <div class="canva">
                 <p>
-                    Confused? Check out these 
+                    Confused? Check out these
                     <button class="guide-btn">Detailed Steps</button>
                 </p>
             </div>
-    
-            
+
+            <!-- Div to display fetched Codeforces data -->
+            <div id="cf-data" style="margin-top: 20px;"></div>
+
         </div>
     </div>
-    
-    
 
     <script>
-        function saveCFHandle() {
+        async function saveAndFetchCFData() {
             const cfHandle = document.getElementById("cf-input").value.trim();
             if (cfHandle === "") {
                 alert("Please enter a valid Codeforces handle.");
                 return;
             }
-            localStorage.setItem("cfHandle", cfHandle);
-            alert("Codeforces handle saved!");
-        }
 
-        // Load handle if already set
-        window.onload = function () {
-            const savedHandle = localStorage.getItem("cfHandle");
-            if (savedHandle) {
-                document.getElementById("cf-input").value = savedHandle;
+            // get email from local storage
+            const email = localStorage.getItem("email");
+            if (!email) {
+                alert("You're not logged in. Please log in first.");
+                window.location.href = "login.html";
+                return;
             }
-        };
+
+            try {
+                // Save the handle
+                const saveResponse = await fetch("http://localhost:5000/api/codeforces/link", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email, codeforcesHandle: cfHandle }),
+                });
+
+                const saveData = await saveResponse.json();
+                if (!saveResponse.ok) {
+                    alert("Error saving handle: " + saveData.message);
+                    return;
+                }
+
+                alert("Codeforces handle saved successfully!");
+
+                // Fetch Codeforces data
+                // console.log(${cfHandle});
+                const fetchResponse = await fetch(`http://localhost:5000/api/codeforces/user/${cfHandle}`);
+                const fetchData = await fetchResponse.json();
+
+                if (!fetchResponse.ok) {
+                    alert("Error fetching data: " + fetchData.error);
+                    return;
+                }
+
+                // Display the fetched data
+                document.getElementById("cf-data").innerHTML = `
+                    <p><strong>Handle:</strong> ${fetchData.handle}</p>
+                    <p><strong>Rank:</strong> ${fetchData.rank}</p>
+                    <p><strong>Rating:</strong> ${fetchData.rating}</p>
+                    <p><strong>Max Rank:</strong> ${fetchData.maxRank}</p>
+                    <p><strong>Max Rating:</strong> ${fetchData.maxRating}</p>
+                    <img src="${fetchData.avatar}" alt="Avatar" width="100" height="100" style="border-radius:50%;">
+                `;
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Failed to save and fetch Codeforces data from connect-codeforces.");
+            }
+        }
     </script>
     <script src="static/script.js"></script>
 </body>

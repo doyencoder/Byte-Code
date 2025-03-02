@@ -4,6 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 const authRoutes = require("./routes/auth");
+const codeforcesRoutes = require("./routes/codeforces"); // Import Codeforces routes
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(cors());
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/codeforces", codeforcesRoutes); // Register Codeforces route
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)
@@ -21,3 +23,4 @@ mongoose.connect(process.env.MONGO_URI)
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+

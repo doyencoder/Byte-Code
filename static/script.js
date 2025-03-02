@@ -1,3 +1,5 @@
+console.log("script.js loaded");
+
 function toggleMenu() {
   document.querySelector(".mobile-menu").classList.add("active");
 }
@@ -55,6 +57,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let email = document.querySelector(".login input[type='email']").value;
     let password = document.querySelector(".login input[type='password']").value;
 
+    console.log("Email being sent:", email); // Debugging
+
     if (!email || !password) {
       alert("Email and Password cannot be empty!");
       return;
@@ -67,8 +71,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     let data = await response.json();
+    console.log("Response received:", data); // Debugging
     if (data.token) {
       localStorage.setItem("token", data.token);
+      localStorage.setItem("email", data.email);
       alert("Login successful!");
       window.location.href = "home.html";
     } else {
@@ -81,6 +87,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let email = document.querySelector(".signup input[type='email']").value;
     let password = document.querySelector(".signup input[type='password']").value;
+
+    console.log("Email being sent:", email); // Debugging
 
     if (!email || !password) {
       alert("Please fill in all fields.");
@@ -102,6 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     let data = await response.json();
+    console.log("Response received:", data); // Debugging
     if (data.message) {
       alert("Signup successful! Redirecting to home page.");
       window.location.href = "home.html";
@@ -143,6 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 document.addEventListener("DOMContentLoaded", function () {
   const token = localStorage.getItem("token");
+  console.log(localStorage.getItem("email"))
 
   function checkAuthAndNavigate(page) {
     if (!token) {
