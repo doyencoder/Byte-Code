@@ -155,6 +155,7 @@
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({ email, codeforcesHandle: cfHandle }),
+                    // localStorage.setItem("token", data.token);
                 });
 
                 const saveData = await saveResponse.json();

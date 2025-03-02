@@ -4,25 +4,25 @@ const router = express.Router();
 const User = require("../models/User");
 const { linkCodeforces } = require("../controllers/codeforcesController");
 
-// Define POST route for linking Codeforces handle
+// Route for linking Codeforces handle
 router.post("/link", linkCodeforces);
 
-// ✅ Route to fetch Codeforces user details
+// ✅ Fetch and update Codeforces user details
 router.get("/user/:handle", async (req, res) => {
-    const { handle } = req.params;  // ✅ Get the handle from URL parameter
+    const { handle } = req.params;
 
     if (!handle) {
         return res.status(400).json({ error: "Codeforces handle is required" });
     }
-    console.log(`${handle}`);
+
     try {
-        // ✅ Fetch user data from Codeforces API
+        // Fetch user data from Codeforces API
         const response = await axios.get(`https://codeforces.com/api/user.info?handles=${handle}`);
-        
         const userData = response.data.result[0];
 
+        // Update user details in MongoDB
         const updatedUser = await User.findOneAndUpdate(
-            { codeforcesHandle: handle }, // Search by Codeforces handle
+            { codeforcesHandle: handle },
             {
                 $set: {
                     rating: userData.rating,
@@ -31,10 +31,9 @@ router.get("/user/:handle", async (req, res) => {
                     maxRank: userData.maxRank,
                 },
             },
-            { new: true, upsert: false } // ✅ Do not create a new user if not found
+            { new: true, upsert: false }
         );
 
-        // ✅ Return the extracted data as JSON
         res.json({
             handle: userData.handle,
             rank: userData.rank,
@@ -45,7 +44,37 @@ router.get("/user/:handle", async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch Codeforces user data error from codeforces.js" });
+        res.status(500).json({ error: "Failed to fetch Codeforces user data from API." });
+    }
+});
+
+// ✅ Fetch user data from MongoDB by email (For profile page)
+router.get("/fetch-user", async (req, res) => {
+    const { email } = req.query;  // Get email from frontend
+
+    if (!email) {
+        return res.status(400).json({ error: "Email is required." });
+    }
+
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        res.json({
+            handle: user.codeforcesHandle || "Not linked",
+            rank: user.rank || "N/A",
+            rating: user.rating || "N/A",
+            maxRank: user.maxRank || "N/A",
+            maxRating: user.maxRating || "N/A",
+            
+        });
+        
+
+    } catch (error) {
+        res.status(500).json({ error: "Failed to retrieve user data from MongoDB." });
     }
 });
 
