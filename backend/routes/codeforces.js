@@ -8,10 +8,10 @@ const authMiddleware = require("../middleware/authMiddleware");
 // Route for linking Codeforces handle (now protected with middleware)
 router.post("/link", authMiddleware, linkCodeforces);
 
-// ✅ Fetch and update Codeforces user details
+// Fetch and update Codeforces user details
 router.get("/user/:handle", authMiddleware, async (req, res) => {
     try {
-        const userId = req.user.userId; // ✅ Get user ID from auth middleware
+        const userId = req.user.userId; // Get user ID from auth middleware
         const { handle } = req.params;
 
         if (!handle) {
@@ -53,7 +53,7 @@ router.get("/user/:handle", authMiddleware, async (req, res) => {
 });
 
 
-// ✅ Fetch user data from MongoDB by email (For profile page)
+// ✅ Fetch user data from MongoDB(For profile page)
 router.get("/fetch-user", authMiddleware, async (req, res) => {
     try {
         // Get user ID from the token (added by middleware)
@@ -79,6 +79,34 @@ router.get("/fetch-user", authMiddleware, async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ error: "Failed to retrieve user data from MongoDB." });
+    }
+});
+
+
+// Route to fetch rating history for a user
+router.get("/rating-history/:handle", authMiddleware, async (req, res) => {
+    try {
+        const { handle } = req.params;
+        
+        if (!handle) {
+            return res.status(400).json({ error: "Codeforces handle is required" });
+        }
+        
+        // Fetch rating history from Codeforces API
+        const response = await axios.get(`https://codeforces.com/api/user.rating?handle=${handle}`);
+        
+        // Check if the API response is successful
+        if (response.data.status !== "OK") {
+            return res.status(400).json({ error: "Failed to fetch rating data from Codeforces" });
+        }
+        
+        // Extract the rating history from the response
+        const ratingHistory = response.data.result;
+        
+        res.json(ratingHistory);
+    } catch (error) {
+        console.error("Error fetching rating history:", error.message);
+        res.status(500).json({ error: "Failed to fetch rating history" });
     }
 });
 
