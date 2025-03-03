@@ -10,7 +10,8 @@
         #navbar {
             height: auto;
         }
-        .zero{
+
+        .zero {
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -21,18 +22,18 @@
         .edit-profile-container {
             background: white;
             padding: 20px;
-            color:#00154e;
+            color: #00154e;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            width:30vw;
+            width: 30vw;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
         }
 
-        
+
 
         input,
         select {
@@ -41,7 +42,7 @@
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ccc;
-            color:#00154e;
+            color: #00154e;
             border-radius: 5px;
             font-size: 16px;
         }
@@ -51,19 +52,23 @@
             justify-content: space-between;
             margin-top: 20px;
         }
-        #edit-profile-form{
+
+        #edit-profile-form {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
         }
-        #country{
+
+        #country {
             width: 25vw;
         }
 
-        #back,#save-button {
-            padding-bottom: 10px ;
-            background-color: #062069;;
+        #back,
+        #save-button {
+            padding-bottom: 10px;
+            background-color: #062069;
+            ;
             color: white;
             border: none;
             padding: 10px 15px;
@@ -71,17 +76,19 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .btn2{
+
+        .btn2 {
             padding-top: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap:20px;
+            gap: 20px;
         }
 
         #save-button:hover {
             background-color: #000f1f;
         }
+
         #back:hover {
             background-color: #000f1f;
         }
@@ -155,7 +162,7 @@
                     <button onclick="window.location.href='profile.html'" id="back">Back</button>
                     <button type="submit" id="save-button">Save</button>
                 </div>
-                
+
             </form>
         </div>
     </div>
@@ -163,12 +170,47 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Load existing data from localStorage
-            document.getElementById("name").value = localStorage.getItem("name") || "";
-            document.getElementById("institution").value = localStorage.getItem("institution") || "";
-            document.getElementById("country").value = localStorage.getItem("country") || "";
+            const token = localStorage.getItem("token");
 
-            document.getElementById("edit-profile-form").addEventListener("submit", function (event) {
+            if (!token) {
+                alert("You're not logged in. Please log in first.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            // Load existing data from the server
+            async function loadProfileData() {
+                try {
+                    const response = await fetch("http://localhost:5000/api/profile", {
+                        method: "GET",
+                        headers: {
+                            "Authorization": token
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Failed to load profile data");
+                    }
+
+                    const data = await response.json();
+
+                    // Fill the form with data from server
+                    document.getElementById("name").value = data.name || "";
+                    document.getElementById("institution").value = data.institution || "";
+                    document.getElementById("country").value = data.country || "";
+
+                } catch (error) {
+                    console.error("Error loading profile data:", error);
+                    // Fall back to local storage if API fails
+                    document.getElementById("name").value = localStorage.getItem("name") || "";
+                    document.getElementById("institution").value = localStorage.getItem("institution") || "";
+                    document.getElementById("country").value = localStorage.getItem("country") || "";
+                }
+            }
+
+            loadProfileData();
+
+            document.getElementById("edit-profile-form").addEventListener("submit", async function (event) {
                 event.preventDefault();
 
                 // Get form values
@@ -176,18 +218,35 @@
                 const institution = document.getElementById("institution").value.trim();
                 const country = document.getElementById("country").value;
 
-                // Save data to localStorage
-                if (name) localStorage.setItem("name", name);
-                if (institution) localStorage.setItem("institution", institution);
-                if (country) localStorage.setItem("country", country);
+                // Save data both to server and localStorage
+                try {
+                    const response = await fetch("http://localhost:5000/api/profile/update", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": token
+                        },
+                        body: JSON.stringify({ name, institution, country })
+                    });
 
-                // Show alert only when Save is clicked
-                if (event.submitter && event.submitter.id === "save-button") {
+                    if (!response.ok) {
+                        throw new Error("Failed to update profile on server");
+                    }
+
+                    // Also keep in localStorage for redundancy and quick access
+                    if (name) localStorage.setItem("name", name);
+                    if (institution) localStorage.setItem("institution", institution);
+                    if (country) localStorage.setItem("country", country);
+
                     alert("Profile details updated successfully!");
-                }
 
-                // Redirect to profile page
-                window.location.href = "profile.html";
+                    // Redirect to profile page
+                    window.location.href = "profile.html";
+
+                } catch (error) {
+                    console.error("Error updating profile:", error);
+                    alert("Error updating profile on server. Please try again.");
+                }
             });
         });
     </script>

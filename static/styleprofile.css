@@ -93,6 +93,63 @@
     font-weight: bold;
 }
 
+/* Add this to your styleprofile.css file */
+
+.cf-stats {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+}
+
+.cf-stats h3 {
+    color: #00154e;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.cf-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.cf-stat-item {
+    background-color: #f5f7ff;
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #00154e;
+}
+
+/* Different colors based on Codeforces ranks */
+.newbie { color: #808080; }
+.pupil { color: #008000; }
+.specialist { color: #03a89e; }
+.expert { color: #0000ff; }
+.candidate-master { color: #a0a; }
+.master { color: #ff8c00; }
+.international-master { color: #ff8c00; }
+.grandmaster { color: #ff0000; }
+.international-grandmaster { color: #ff0000; }
+.legendary-grandmaster { color: #ff0000; }
+
 button {
     background: #03206f;
     color: white;

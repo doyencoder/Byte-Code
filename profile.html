@@ -74,18 +74,20 @@
 
     <script>
         async function loadProfileData() {
-            const email = localStorage.getItem("email"); // Retrieve email from local storage
-            if (!email) {
+            const token = localStorage.getItem("token");
+            if (!token) {
                 alert("You're not logged in. Redirecting to login page.");
                 window.location.href = "login.html";
                 return;
             }
 
-            document.getElementById("user-email").textContent = email;
-
             try {
-                // Fetch user data from the backend using email
-                const response = await fetch(`http://localhost:5000/api/codeforces/fetch-user?email=${email}`);
+                // Fetch user data from the backend using token
+                const response = await fetch("http://localhost:5000/api/codeforces/fetch-user", {
+                    headers: {
+                        "Authorization": token
+                    }
+                });
                 const data = await response.json();
 
                 if (!response.ok) {
@@ -93,11 +95,44 @@
                 }
 
                 // Update UI with user data
-                document.getElementById("user-name").textContent = localStorage.getItem("name") || "User Name";
-                document.getElementById("institution").textContent = localStorage.getItem("institution") || "--";
-                document.getElementById("country").textContent = localStorage.getItem("country") || "--";
-
+                document.getElementById("user-email").textContent = data.email || "No email available";
+                document.getElementById("user-name").textContent = data.name || "User Name";
+                document.getElementById("institution").textContent = data.institution || "--";
+                document.getElementById("country").textContent = data.country || "--";
                 document.getElementById("cf-handle").textContent = data.handle || "Not linked";
+
+                // document.getElementById("cf-handle").textContent = data.handle || "Not linked";
+
+                if (data.rating !== "N/A") {
+                    const cfStatsContainer = document.createElement("div");
+                    cfStatsContainer.className = "cf-stats";
+                    cfStatsContainer.innerHTML = `
+                        <h3>Codeforces Stats</h3>
+                        <div class="cf-stats-grid">
+                            <div class="cf-stat-item">
+                                <span class="stat-label">Rating:</span>
+                                <span class="stat-value">${data.rating}</span>
+                            </div>
+                            <div class="cf-stat-item">
+                                <span class="stat-label">Rank:</span>
+                                <span class="stat-value">${data.rank}</span>
+                            </div>
+                            <div class="cf-stat-item">
+                                <span class="stat-label">Max Rating:</span>
+                                <span class="stat-value">${data.maxRating}</span>
+                            </div>
+                            <div class="cf-stat-item">
+                                <span class="stat-label">Max Rank:</span>
+                                <span class="stat-value">${data.maxRank}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Add after profile-container if it doesn't exist yet
+                    if (!document.querySelector(".cf-stats")) {
+                        document.querySelector(".profile-container").appendChild(cfStatsContainer);
+                    }
+                }
 
                 // Set initials for profile picture
                 const name = document.getElementById("user-name").textContent;

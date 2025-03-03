@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 
 const authRoutes = require("./routes/auth");
 const codeforcesRoutes = require("./routes/codeforces"); // Import Codeforces routes
+const profileRoutes = require("./routes/profile"); // Import profile routes
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(cors());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/codeforces", codeforcesRoutes); // Register Codeforces route
+app.use("/api/profile", profileRoutes); // Register profile route
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)

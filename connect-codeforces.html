@@ -139,23 +139,23 @@
                 return;
             }
 
-            // get email from local storage
-            const email = localStorage.getItem("email");
-            if (!email) {
+            // Get token from local storage
+            const token = localStorage.getItem("token");
+            if (!token) {
                 alert("You're not logged in. Please log in first.");
                 window.location.href = "login.html";
                 return;
             }
 
             try {
-                // Save the handle
+                // Save the handle using token authentication
                 const saveResponse = await fetch("http://localhost:5000/api/codeforces/link", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        "Authorization": token
                     },
-                    body: JSON.stringify({ email, codeforcesHandle: cfHandle }),
-                    // localStorage.setItem("token", data.token);
+                    body: JSON.stringify({ codeforcesHandle: cfHandle }),
                 });
 
                 const saveData = await saveResponse.json();
@@ -168,8 +168,13 @@
 
                 // Fetch Codeforces data
                 // console.log(${cfHandle});
-                const fetchResponse = await fetch(`http://localhost:5000/api/codeforces/user/${cfHandle}`);
+                const fetchResponse = await fetch(`http://localhost:5000/api/codeforces/user/${cfHandle}`, {
+                    headers: {
+                        "Authorization": token
+                    }
+                });
                 const fetchData = await fetchResponse.json();
+
 
                 if (!fetchResponse.ok) {
                     alert("Error fetching data: " + fetchData.error);

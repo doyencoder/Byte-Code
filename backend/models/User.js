@@ -9,7 +9,10 @@ const UserSchema = new mongoose.Schema({
         trim: true
     },
     password: { type: String, required: true },
-    codeforcesHandle: { type: String, unique: true, sparse: true, default: null },
+    name: { type: String, default: null },
+    institution: { type: String, default: null },
+    country: { type: String, default: null },
+    codeforcesHandle: { type: String, sparse: true, default: null },
     rating: { type: Number, default: null },
     rank: { type: String, default: null },
     maxRating: { type: Number, default: null },

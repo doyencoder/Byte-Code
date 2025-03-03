@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Response received:", data); // Debugging
     if (data.token) {
       localStorage.setItem("token", data.token);
-      localStorage.setItem("email", data.email);
+      // localStorage.setItem("email", data.email);
       alert("Login successful!");
       window.location.href = "home.html";
     } else {
@@ -85,28 +85,33 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelector(".signup .button-field button").addEventListener("click", async function (event) {
     event.preventDefault();
 
+    console.log("Working part1"); //Debugging
+    
+    // Check if these elements exist before accessing them
     let email = document.querySelector(".signup input[type='email']").value;
     let password = document.querySelector(".signup input[type='password']").value;
 
-    console.log("Email being sent:", email); // Debugging
+    console.log("Working part 2:", email); // Debugging
 
     if (!email || !password) {
-      alert("Please fill in all fields.");
+      alert("Please fill in both fields");
       return;
     }
+    
     if (!isValidEmail(email)) {
       alert("Please enter a valid email address (e.g., user@example.com)!");
       return;
     }
-    if (!isValidPassword(password)) {
-      alert("Password must be at least 8 characters long, include one uppercase, one lowercase, one digit, and one special character (@, #, $, etc.)");
-      return;
-    }
+    // if (!isValidPassword(password)) {
+    //   alert("Password must be at least 8 characters long, include one uppercase, one lowercase, one digit, and one special character (@, #, $, etc.)");
+    //   return;
+    // }
 
     let response = await fetch("http://127.0.0.1:5000/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
+      
     });
 
     let data = await response.json();
