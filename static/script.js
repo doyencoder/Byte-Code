@@ -40,6 +40,20 @@ if (urlParams.get("signup") === "true") {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  // Check if redirected from Google OAuth with token in URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get("token");
+  const email = urlParams.get("email");
+  
+  if (token) {
+    localStorage.setItem("token", token);
+    if (email) {
+      localStorage.setItem("email", email);
+    }
+    alert("Google authentication successful!");
+    window.location.href = "dashboard.html";
+  }
+
   function isValidEmail(email) {
     // Regular Expression for basic email validation
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -49,6 +63,24 @@ document.addEventListener("DOMContentLoaded", function () {
     // Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 digit, and 1 special character
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!])[A-Za-z\d@#$%^&*!]{8,}$/;
     return passwordRegex.test(password);
+  }
+
+  // Set up Google login/signup buttons
+  const googleLoginBtn = document.querySelector(".login .field.google");
+  const googleSignupBtn = document.querySelector(".signup .field.google");
+  
+  if (googleLoginBtn) {
+    googleLoginBtn.addEventListener("click", function(e) {
+      e.preventDefault();
+      window.location.href = "http://localhost:5000/api/auth/google";
+    });
+  }
+  
+  if (googleSignupBtn) {
+    googleSignupBtn.addEventListener("click", function(e) {
+      e.preventDefault();
+      window.location.href = "http://localhost:5000/api/auth/google";
+    });
   }
 
   document.querySelector(".login .button-field button").addEventListener("click", async function (event) {

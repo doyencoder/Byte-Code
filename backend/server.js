@@ -2,6 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const passport = require("passport");
+const session = require("express-session");
+const path = require("path");
 
 const authRoutes = require("./routes/auth");
 const codeforcesRoutes = require("./routes/codeforces"); // Import Codeforces routes
@@ -11,7 +14,29 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5000", // Update this to match your frontend URL
+  credentials: true
+}));
+
+// Session configuration (must be before passport initialization)
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } // Set to true if using HTTPS
+  })
+);
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Static files
+const rootDir = path.join(__dirname, ".."); // Go one level up from backend
+
+app.use(express.static(rootDir)); // Assuming your HTML files are in a 'public' folder
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -25,4 +50,3 @@ mongoose.connect(process.env.MONGO_URI)
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-

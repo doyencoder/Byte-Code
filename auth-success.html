@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication Successful</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .success-container {
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #4CAF50;
+    }
+  </style>
+</head>
+<body>
+  <div class="success-container">
+    <h1>Authentication Successful!</h1>
+    <p>You have successfully authenticated with Google.</p>
+    <p>Redirecting you to the dashboard...</p>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get token from URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      const email = urlParams.get('email');
+      
+      if (token) {
+        // Store token in localStorage
+        localStorage.setItem('token', token);
+        if (email) {
+          localStorage.setItem('email', email);
+        }
+        
+        // Redirect to dashboard after a brief delay
+        setTimeout(function() {
+          window.location.href = 'dashboard.html';
+        }, 2000);
+      } else {
+        document.body.innerHTML = '<div class="success-container"><h1 style="color: red">Authentication Error</h1><p>Failed to retrieve authentication token.</p></div>';
+      }
+    });
+  </script>
+</body>
+</html>

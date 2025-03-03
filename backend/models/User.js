@@ -16,7 +16,11 @@ const UserSchema = new mongoose.Schema({
     rating: { type: Number, default: null },
     rank: { type: String, default: null },
     maxRating: { type: Number, default: null },
-    maxRank: { type: String, default: null }
+    maxRank: { type: String, default: null },
+    //added for Google authentication
+    googleId: { type: String, sparse: true },
+    picture: { type: String, default: null },
+    isGoogleUser: { type: Boolean, default: false }
 });
 
 module.exports = mongoose.model("User", UserSchema);

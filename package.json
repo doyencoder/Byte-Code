@@ -16,5 +16,9 @@
     "url": "https://github.com/doyencoder/CP-ARENA/issues"
   },
   "homepage": "https://github.com/doyencoder/CP-ARENA#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0"
+  }
 }

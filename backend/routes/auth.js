@@ -2,9 +2,86 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const passport = require("passport");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const router = express.Router();
 
+// Set up Passport.js with Google Strategy
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID, // Add these to your .env file
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: "http://localhost:5000/api/auth/google/callback",
+      passReqToCallback: true
+    },
+    async (req, accessToken, refreshToken, profile, done) => {
+      try {
+        // Check if user already exists in our database
+        let user = await User.findOne({ email: profile.emails[0].value });
+        
+        if (user) {
+          // User exists, return the user
+          return done(null, user);
+        } else {
+          // Create a new user with Google data
+          const randomPassword = Math.random().toString(36).slice(-10);
+          const hashedPassword = await bcrypt.hash(randomPassword, 10);
+          
+          const newUser = new User({
+            email: profile.emails[0].value,
+            password: hashedPassword, // Random secure password
+            name: profile.displayName || profile.emails[0].value.split('@')[0] // Use display name or create from email
+          });
+          
+          await newUser.save();
+          return done(null, newUser);
+        }
+      } catch (error) {
+        return done(error, null);
+      }
+    }
+  )
+);
+
+// Passport Serialize and Deserialize
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
+});
+
+// Initialize passport in your Express app (add this to your main server.js file)
+// app.use(passport.initialize());
+// app.use(passport.session());
+
+// Google OAuth Routes
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "/login.html" }),
+  (req, res) => {
+    // Generate JWT token for the authenticated user
+    const token = jwt.sign({ userId: req.user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    
+    // Redirect to frontend with token (you'll need to handle this on the frontend)
+    res.redirect(`/auth-success.html?token=${token}&email=${req.user.email}`);
+  }
+);
+
+// Keep your existing routes
 // Signup
 router.post("/signup", async (req, res) => {
     const { email, password } = req.body;
@@ -52,7 +129,6 @@ router.post("/login", async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
-
 
 router.post("/logout", (req, res) => {
     res.json({ message: "Logged out successfully" });
