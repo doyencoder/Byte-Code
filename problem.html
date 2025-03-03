@@ -5,10 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="static/favicon.ico">
-    <title>Problem Analytics</title>
+    <title>CP ARENA - Problems</title>
     <link rel="stylesheet" href="static/styleproblem.css">
     <link rel="stylesheet" href="static/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -59,10 +58,10 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Title</th>
+                            <th>Problem</th>
                             <th>Rating</th>
+                            <th>Tags</th>
                             <th>Status</th>
-                            <th>Link</th>
                         </tr>
                     </thead>
                     <tbody id="problemTable">
@@ -72,23 +71,14 @@
                 <div id="loading" class="loading">Loading problems...</div>
             </div>
 
-            <!-- Filters & Charts -->
-            <div class="analytics-section">
-                <div class="user-profile-summary">
-                    <h3>Your Profile</h3>
-                    <div class="user-info">
-                        <p>Username: <span id="username">User123</span></p>
-                        <p>Rank: <span id="userRank">#42</span></p>
-                        <p>Total Solved: <span id="totalSolved">0</span></p>
-                    </div>
-                </div>
-
-                <!-- Filters -->
-                <div class="filters">
-                    <h3>Filters</h3>
-                    <label for="ratingFilter">Choose Rating:</label>
+            <!-- Filters -->
+            <div class="filters-section">
+                <h2>Filters</h2>
+                
+                <div class="filter-group">
+                    <label for="ratingFilter">Rating:</label>
                     <select id="ratingFilter" onchange="filterProblems()">
-                        <option value="all">All</option>
+                        <option value="all">All Ratings</option>
                         <option value="800">800</option>
                         <option value="900">900</option>
                         <option value="1000">1000</option>
@@ -103,32 +93,36 @@
                         <option value="1900">1900</option>
                         <option value="2000">2000</option>
                     </select>
+                </div>
 
-                    <label for="statusFilter">Problem Status:</label>
+                <div class="filter-group">
+                    <label for="tagFilter">Tags:</label>
+                    <select id="tagFilter" onchange="filterProblems()">
+                        <option value="all">All Tags</option>
+                        <option value="implementation">Implementation</option>
+                        <option value="dp">Dynamic Programming</option>
+                        <option value="math">Math</option>
+                        <option value="greedy">Greedy</option>
+                        <option value="dfs">DFS and Similar</option>
+                        <option value="data-structures">Data Structures</option>
+                        <option value="strings">Strings</option>
+                        <option value="binary-search">Binary Search</option>
+                        <option value="sorting">Sorting</option>
+                        <option value="graphs">Graphs</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="statusFilter">Status:</label>
                     <select id="statusFilter" onchange="filterProblems()">
                         <option value="all">All</option>
                         <option value="solved">Solved</option>
                         <option value="unsolved">Unsolved</option>
                     </select>
                 </div>
-
-                <h3>Your Analytics</h3>
-
-                <!-- Chart Container -->
-                <div class="chart-container">
-                    <canvas id="solvedChart"></canvas>
-                    <div class="chart-label">Solved vs Unsolved</div>
-                </div>
                 
-                <div class="chart-container">
-                    <canvas id="ratingChart"></canvas>
-                    <div class="chart-label">Problems by Rating</div>
-                </div>
+                <button class="reset-btn" onclick="resetFilters()">Reset Filters</button>
                 
-                <div class="chart-container">
-                    <canvas id="progressChart"></canvas>
-                    <div class="chart-label">Solving Progress (Last 7 days)</div>
-                </div>
             </div>
         </div>
     </div>
@@ -138,17 +132,14 @@
         let allProblems = [];
         let currentProblems = [];
         let currentPage = 1;
-        const problemsPerPage = 10;
+        const problemsPerPage = 15;
         const currentUser = {
             username: "User123",
-            rank: 42,
             solvedProblems: new Set() // Store problem IDs that are solved
         };
         
         // Function to fetch problems from Codeforces
         async function fetchProblems() {
-            // In a real implementation, you would fetch from Codeforces API
-            // For demonstration, we'll create sample data with 30 problems per rating
             document.getElementById("loading").style.display = "block";
             
             try {
@@ -157,16 +148,35 @@
                 
                 allProblems = [];
                 
-                // Create 30 problems for each rating from 800 to 2000
+                // Common problem tags
+                const tags = [
+                    "implementation", "dp", "math", "greedy", 
+                    "dfs", "data-structures", "strings", 
+                    "binary-search", "sorting", "graphs"
+                ];
+                
+                // Create problems with ratings from 800 to 2000
                 for (let rating = 800; rating <= 2000; rating += 100) {
                     for (let i = 1; i <= 30; i++) {
+                        // Assign 1-3 random tags to each problem
+                        const numTags = Math.floor(Math.random() * 3) + 1;
+                        const problemTags = [];
+                        
+                        for (let j = 0; j < numTags; j++) {
+                            const randomTag = tags[Math.floor(Math.random() * tags.length)];
+                            if (!problemTags.includes(randomTag)) {
+                                problemTags.push(randomTag);
+                            }
+                        }
+                        
                         const problemId = `${rating}-${i}`;
                         allProblems.push({
                             id: problemId,
-                            title: `Problem ${i} (${rating})`,
+                            title: `Problem ${String.fromCharCode(65 + (i % 26))}${Math.floor(i/26)}`,
                             rating: rating,
+                            tags: problemTags,
                             status: currentUser.solvedProblems.has(problemId) ? "solved" : "unsolved",
-                            link: `https://codeforces.com/problemset/problem/${Math.floor(Math.random() * 1000)}/${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`
+                            link: `https://codeforces.com/problemset/problem/${Math.floor(Math.random() * 1000)}/${String.fromCharCode(65 + (i % 26))}`
                         });
                     }
                 }
@@ -201,17 +211,15 @@
             
             pageProblems.forEach(problem => {
                 const row = `<tr data-id="${problem.id}">
-                    <td>${problem.title}</td>
+                    <td><a href="${problem.link}" target="_blank">${problem.title}</a></td>
                     <td>${problem.rating}</td>
+                    <td>${problem.tags.join(", ")}</td>
                     <td class="${problem.status}">${problem.status.charAt(0).toUpperCase() + problem.status.slice(1)}</td>
-                    <td><a href="${problem.link}" target="_blank" class="solve-btn">Solve</a></td>
                 </tr>`;
                 tableBody.innerHTML += row;
             });
             
             document.getElementById("page-info").textContent = `Page ${currentPage} of ${Math.ceil(currentProblems.length / problemsPerPage)}`;
-            
-            updateCharts();
         }
         
         // Navigation functions
@@ -232,15 +240,17 @@
             }
         }
         
-        // Function to filter problems based on rating & status
+        // Function to filter problems based on rating, tags & status
         function filterProblems() {
             const selectedRating = document.getElementById("ratingFilter").value;
+            const selectedTag = document.getElementById("tagFilter").value;
             const selectedStatus = document.getElementById("statusFilter").value;
             
             currentProblems = allProblems.filter(problem => {
                 const ratingMatch = selectedRating === "all" || problem.rating == selectedRating;
+                const tagMatch = selectedTag === "all" || problem.tags.includes(selectedTag);
                 const statusMatch = selectedStatus === "all" || problem.status === selectedStatus;
-                return ratingMatch && statusMatch;
+                return ratingMatch && tagMatch && statusMatch;
             });
             
             // Reset to first page when filtering
@@ -248,151 +258,12 @@
             displayProblems();
         }
         
-        // Function to update user info in the sidebar
-        function updateUserInfo() {
-            document.getElementById("username").textContent = currentUser.username;
-            document.getElementById("userRank").textContent = `#${currentUser.rank}`;
-            document.getElementById("totalSolved").textContent = currentUser.solvedProblems.size;
-        }
-        
-        // Function to update the charts
-        function updateCharts() {
-            const solvedCount = allProblems.filter(p => p.status === "solved").length;
-            const unsolvedCount = allProblems.filter(p => p.status === "unsolved").length;
-            
-            // Get counts by rating
-            const ratingCounts = {};
-            const solvedByRating = {};
-            
-            allProblems.forEach(problem => {
-                if (!ratingCounts[problem.rating]) {
-                    ratingCounts[problem.rating] = 0;
-                    solvedByRating[problem.rating] = 0;
-                }
-                
-                ratingCounts[problem.rating]++;
-                
-                if (problem.status === "solved") {
-                    solvedByRating[problem.rating]++;
-                }
-            });
-            
-            // Sort ratings for display
-            const sortedRatings = Object.keys(ratingCounts).sort((a, b) => a - b);
-            
-            // Clear previous charts
-            const charts = document.querySelectorAll('.chart-container canvas');
-            charts.forEach(canvas => {
-                if (canvas.chart) {
-                    canvas.chart.destroy();
-                }
-            });
-            
-            // Solved/Unsolved Chart
-            const solvedCtx = document.getElementById("solvedChart");
-            solvedCtx.chart = new Chart(solvedCtx, {
-                type: "doughnut",
-                data: {
-                    labels: ["Solved", "Unsolved"],
-                    datasets: [{
-                        data: [solvedCount, unsolvedCount],
-                        backgroundColor: ["#28a745", "#dc3545"]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-            
-            // Rating Distribution Chart
-            const ratingCtx = document.getElementById("ratingChart");
-            ratingCtx.chart = new Chart(ratingCtx, {
-                type: "bar",
-                data: {
-                    labels: sortedRatings,
-                    datasets: [
-                        {
-                            label: "Total",
-                            data: sortedRatings.map(rating => ratingCounts[rating]),
-                            backgroundColor: "#007bff"
-                        },
-                        {
-                            label: "Solved",
-                            data: sortedRatings.map(rating => solvedByRating[rating]),
-                            backgroundColor: "#28a745"
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Problem Rating'
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Number of Problems'
-                            },
-                            beginAtZero: true
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-            
-            // Progress Chart (last 7 days)
-            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            // Mock data for solved problems per day
-            const dailySolved = [3, 5, 2, 0, 7, 4, 6]; 
-            
-            const progressCtx = document.getElementById("progressChart");
-            progressCtx.chart = new Chart(progressCtx, {
-                type: "line",
-                data: {
-                    labels: days,
-                    datasets: [{
-                        label: "Problems Solved",
-                        data: dailySolved,
-                        borderColor: "#17a2b8",
-                        backgroundColor: "rgba(23, 162, 184, 0.2)",
-                        tension: 0.3,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Problems Solved'
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
+        // Function to reset all filters
+        function resetFilters() {
+            document.getElementById("ratingFilter").value = "all";
+            document.getElementById("tagFilter").value = "all";
+            document.getElementById("statusFilter").value = "all";
+            filterProblems();
         }
         
         // Function to refresh problem status

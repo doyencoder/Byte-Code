@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Response received:", data); // Debugging
     if (data.message) {
       alert("Signup successful! Redirecting to home page.");
-      window.location.href = "dashboard.html";
+      window.location.href = "connect-codeforces.html";
     } else {
       alert(data.error || "Signup failed");
     }
