@@ -234,4 +234,52 @@ router.get("/problem-tags/:handle", authMiddleware, async (req, res) => {
     }
 });
 
+// Route to fetch submission verdict statistics for a user
+router.get("/submission-verdicts/:handle", authMiddleware, async (req, res) => {
+    try {
+        const { handle } = req.params;
+        
+        if (!handle) {
+            return res.status(400).json({ error: "Codeforces handle is required" });
+        }
+        
+        // Fetch user's submissions from Codeforces API
+        const response = await axios.get(`https://codeforces.com/api/user.status?handle=${handle}`);
+        
+        // Check if the API response is successful
+        if (response.data.status !== "OK") {
+            return res.status(400).json({ error: "Failed to fetch submissions data from Codeforces" });
+        }
+        
+        // Extract the submissions from the response
+        const submissions = response.data.result;
+        
+        // Count occurrences of each verdict
+        const verdictCounts = {};
+        
+        submissions.forEach(submission => {
+            const verdict = submission.verdict;
+            if (!verdictCounts[verdict]) {
+                verdictCounts[verdict] = 0;
+            }
+            verdictCounts[verdict]++;
+        });
+        
+        // Convert to array format for the frontend
+        const verdicts = Object.keys(verdictCounts).map(verdict => ({
+            verdict: verdict,
+            count: verdictCounts[verdict]
+        }));
+        
+        res.json({
+            totalSubmissions: submissions.length,
+            verdicts: verdicts
+        });
+        
+    } catch (error) {
+        console.error("Error fetching submission verdicts:", error.message);
+        res.status(500).json({ error: "Failed to fetch submission verdicts" });
+    }
+});
+
 module.exports = router;

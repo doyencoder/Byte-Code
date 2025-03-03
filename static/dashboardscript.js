@@ -1,7 +1,7 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Get the JWT token from localStorage
     const token = localStorage.getItem("token");
-    
+
     // If no token, redirect to login page
     if (!token) {
         alert("You must log in to view your dashboard");
@@ -18,15 +18,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     "Authorization": token
                 }
             });
-            
+
             if (!response.ok) {
                 // console.log("caca");
                 throw new Error("Failed to fetch user data");
             }
-            
+
             const userData = await response.json();
             updateUserStats(userData);
-            
+
             // If user has a handle, fetch additional Codeforces data
             if (userData.handle && userData.handle !== "Not linked") {
                 fetchRatingHistory(userData.handle);
@@ -36,11 +36,11 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // Show a message if Codeforces account is not linked
                 document.querySelector('.dashboard-container h1').textContent = 'Link your Codeforces handle to see analytics';
-                document.querySelector('.dashboard-container').innerHTML += 
+                document.querySelector('.dashboard-container').innerHTML +=
                     '<div class="alert" style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-top: 20px; text-align: center;">' +
                     'Please go to your profile page and link your Codeforces handle to see your analytics.' +
                     '</div>';
-                
+
                 // Initialize empty charts as we have no data
                 initializeEmptyCharts();
             }
@@ -54,13 +54,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to update user stats in the UI
     function updateUserStats(userData) {
         // Update user handle
-        document.querySelector('.stats-overview .stat-card:nth-child(1) .stat-value').textContent = 
+        document.querySelector('.stats-overview .stat-card:nth-child(1) .stat-value').textContent =
             userData.handle !== "Not linked" ? userData.handle : "Not linked";
-        
+
         // Update current rating
         const ratingElement = document.querySelector('.stats-overview .stat-card:nth-child(2) .stat-value');
         const ratingTitleElement = document.querySelector('.stats-overview .stat-card:nth-child(2) .rating-title');
-        
+
         if (userData.rating && userData.rating !== "N/A") {
             ratingElement.textContent = userData.rating;
             ratingTitleElement.textContent = userData.rank || "Unrated";
@@ -70,13 +70,13 @@ document.addEventListener('DOMContentLoaded', function() {
             ratingElement.textContent = "N/A";
             ratingTitleElement.textContent = "Unrated";
         }
-        
+
         // We'll update days active later when we have that data
-        
+
         // Update max rating
         const maxRatingElement = document.querySelector('.stats-overview .stat-card:nth-child(4) .stat-value');
         const maxRankElement = document.querySelector('.stats-overview .stat-card:nth-child(4) .rating-title');
-        
+
         if (userData.maxRating && userData.maxRating !== "N/A") {
             maxRatingElement.textContent = userData.maxRating;
             maxRankElement.textContent = userData.maxRank || "Unrated";
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
             maxRankElement.textContent = "Unrated";
         }
     }
-    
+
     // Function to get color based on Codeforces rank
     function getRankColor(rank) {
         if (!rank) return "#000000";
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             console.log("Fetching rating history for handle:", handle);
             console.log("Using token:", token);
-            
+
             // Get rating history from our backend API
             const response = await fetch(`http://127.0.0.1:5000/api/codeforces/rating-history/${handle}`, {
                 method: "GET",
@@ -131,18 +131,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const ratingData = await response.json();
             console.log("Rating data received:", ratingData);
-            
+
             // Remove loading message if it exists
             const loadingElement = document.querySelector('.loading');
             if (loadingElement) loadingElement.remove();
-            
+
             // If we have data, update the chart
             if (ratingData && ratingData.length > 0) {
                 console.log("WORKING TILL HERE");
                 updateRatingChart(ratingData);
-                
+
                 calculateDaysActive(ratingData);
-                
+
             } else {
                 // No contest history
                 chartContainer.querySelector('h2').textContent = 'Rating History (No contests found)';
@@ -176,25 +176,25 @@ document.addEventListener('DOMContentLoaded', function() {
             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
         });
 
-        
+
 
         const ratings = ratingData.map(entry => entry.newRating);
-        
+
         // Get the initial rating (for the first contest)
         const initialRating = ratingData.length > 0 ? ratingData[0].oldRating : 1500;
-        
+
         // Add the initial rating point if there's contest history
         if (ratingData.length > 0) {
             // Calculate a date slightly before the first contest
             const firstContestDate = new Date(ratingData[0].ratingUpdateTimeSeconds * 1000);
             const initialDate = new Date(firstContestDate);
             initialDate.setDate(initialDate.getDate() - 7); // 1 week before first contest
-            
+
             // Add the initial rating point at the beginning
             labels.unshift(initialDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }));
             ratings.unshift(initialRating);
         }
-        
+
         // Get the minimum and maximum ratings for better y-axis scaling
         const minRating = Math.max(0, Math.min(...ratings) - 100);
         const maxRating = Math.max(...ratings) + 100;
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Free up existing chart if it exists
 
-        
+
         // console.log("wfa");
         // if (window.ratingChart) {
         //     console.log("Chart type:", typeof window.ratingChart);
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.ratingChart instanceof Chart) {
             window.ratingChart.destroy();
         }
-        
+
 
         // Create a new chart
         const ratingCtx = document.getElementById('ratingChart').getContext('2d');
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     tooltip: {
                         callbacks: {
-                            title: function(tooltipItems) {
+                            title: function (tooltipItems) {
                                 const index = tooltipItems[0].dataIndex;
                                 // First point is the initial rating we added
                                 if (index === 0 && ratingData.length > 0) {
@@ -258,11 +258,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }
                                 // Adjust index to account for the initial point we added
                                 const dataIndex = index - 1;
-                                return dataIndex >= 0 && dataIndex < ratingData.length 
-                                    ? ratingData[dataIndex].contestName 
+                                return dataIndex >= 0 && dataIndex < ratingData.length
+                                    ? ratingData[dataIndex].contestName
                                     : '';
                             },
-                            label: function(context) {
+                            label: function (context) {
                                 const index = context.dataIndex;
                                 // First point is the initial rating
                                 if (index === 0) {
@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }
                                 // Adjust index for ratingData
                                 const dataIndex = index - 1;
-                                
+
                                 if (dataIndex >= 0 && dataIndex < ratingData.length) {
                                     const ratingChange = ratingData[dataIndex].newRating - ratingData[dataIndex].oldRating;
                                     const sign = ratingChange >= 0 ? '+' : '';
@@ -344,28 +344,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Sort chronologically
         ratingData.sort((a, b) => a.ratingUpdateTimeSeconds - b.ratingUpdateTimeSeconds);
-        
+
         const firstContestTime = ratingData[0].ratingUpdateTimeSeconds;
         const lastContestTime = ratingData[ratingData.length - 1].ratingUpdateTimeSeconds;
-        
+
         // Calculate days between first and last contest
         const firstDate = new Date(firstContestTime * 1000);
         const lastDate = new Date(lastContestTime * 1000);
         const today = new Date();
-        
+
         // Use the most recent of last contest or today
         const endDate = lastDate > today ? lastDate : today;
-        
+
         const diffTime = Math.abs(endDate - firstDate);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
+
         // Update days active stat
         document.querySelector('.stats-overview .stat-card:nth-child(3) .stat-value').textContent = diffDays.toString();
     }
 
     // Function to fetch problem tags distribution
     async function fetchProblemTags(handle) {
-        
+
         try {
             // Show loading state
             const chartContainer = document.querySelectorAll('.chart-section')[1].querySelector('.chart-container');
@@ -377,13 +377,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 chartContainer.className = 'chart-container';
                 chartsSection.appendChild(chartContainer);
             }
-            
+
             chartContainer.innerHTML = '<h2>Problem Tags Distribution</h2><div class="loading">Loading problem tags data...</div>';
             console.log("debug1");
             chartContainer.innerHTML += '<canvas id="tagsChart"></canvas>';
-            
+
             console.log("Fetching problem tags for handle:", handle);
-            
+
             // Get problem tags from our backend API
             const response = await fetch(`http://127.0.0.1:5000/api/codeforces/problem-tags/${handle}`, {
                 method: "GET",
@@ -391,20 +391,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     "Authorization": token
                 }
             });
-            
+
             console.log("Problem tags API response status:", response.status);
-            
+
             if (!response.ok) {
                 throw new Error("Failed to fetch problem tags data");
             }
-            
+
             const tagsData = await response.json();
             console.log("Problem tags data received:", tagsData);
-            
+
             // Remove loading message
             const loadingElement = chartContainer.querySelector('.loading');
             if (loadingElement) loadingElement.remove();
-            
+
             // Update the chart with the data
             if (tagsData && tagsData.tags && tagsData.tags.length > 0) {
                 updateProblemTagsChart(tagsData);
@@ -422,21 +422,21 @@ document.addEventListener('DOMContentLoaded', function() {
             initializeEmptyTagsChart();
         }
     }
-    
+
     // Function to update the problem tags chart
     function updateProblemTagsChart(tagsData) {
         // Extract tags and their counts
         const tagNames = tagsData.tags.map(item => item.tag);
         const tagCounts = tagsData.tags.map(item => item.count);
-        
+
         // Generate colors for each tag
         const backgroundColors = generateTagColors(tagNames.length);
-        
+
         // If an existing chart exists, destroy it
         if (window.tagsChart instanceof Chart) {
             window.tagsChart.destroy();
         }
-        
+
         // Create the pie chart
         const tagsCtx = document.getElementById('tagsChart').getContext('2d');
         window.tagsChart = new Chart(tagsCtx, {
@@ -466,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 const label = context.label || '';
                                 const value = context.raw || 0;
                                 const total = context.dataset.data.reduce((acc, curr) => acc + curr, 0);
@@ -478,12 +478,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-        
+
         // Update the chart title to include total problems solved
         const chartTitle = document.querySelector('.chart-container:nth-child(3) h2');
         chartTitle.textContent = `Problem Tags Distribution (${tagsData.totalSolvedProblems} Problems Solved)`;
     }
-    
+
     // Function to generate random colors for tags
     function generateTagColors(count) {
         // Predefined colors for common problem tags
@@ -504,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'number theory': 'rgba(231, 76, 60, 0.8)',
             'combinatorics': 'rgba(241, 196, 15, 0.8)'
         };
-        
+
         // Generate colors array
         const colors = [];
         for (let i = 0; i < count; i++) {
@@ -519,16 +519,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 colors.push(`rgba(${r}, ${g}, ${b}, 0.8)`);
             }
         }
-        
+
         return colors;
     }
-    
+
     // Initialize empty tags chart
     function initializeEmptyTagsChart() {
         if (window.tagsChart instanceof Chart) {
             window.tagsChart.destroy();
         }
-        
+
         const tagsCtx = document.getElementById('tagsChart').getContext('2d');
         window.tagsChart = new Chart(tagsCtx, {
             type: 'pie',
@@ -565,7 +565,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.ratingChart instanceof Chart) {
             window.ratingChart.destroy();
         }
-        
+
 
         const ratingCtx = document.getElementById('ratingChart').getContext('2d');
         window.ratingChart = new Chart(ratingCtx, {
@@ -613,9 +613,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const difficultyChartContainer = document.querySelector('.chart-container:nth-child(2)');
             difficultyChartContainer.innerHTML = '<h2>Problem Difficulty Distribution</h2><div class="loading">Loading problem data...</div>';
             difficultyChartContainer.innerHTML += '<canvas id="difficultyChart"></canvas>';
-            
+
             console.log("Fetching solved problems for handle:", handle);
-            
+
             // Get solved problems from our backend API
             const response = await fetch(`http://127.0.0.1:5000/api/codeforces/solved-problems/${handle}`, {
                 method: "GET",
@@ -623,20 +623,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     "Authorization": token
                 }
             });
-            
+
             console.log("API response status for solved problems:", response.status);
-            
+
             if (!response.ok) {
                 throw new Error("Failed to fetch solved problems");
             }
-            
+
             const solvedProblems = await response.json();
             console.log("Solved problems data received:", solvedProblems);
-            
+
             // Remove loading message
             const loadingElement = difficultyChartContainer.querySelector('.loading');
             if (loadingElement) loadingElement.remove();
-            
+
             // Process and display the data
             if (solvedProblems && solvedProblems.length > 0) {
                 updateDifficultyChart(solvedProblems);
@@ -659,14 +659,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateDifficultyChart(problems) {
         // First, filter out problems that don't have a rating
         const ratedProblems = problems.filter(problem => problem.rating);
-        
+
         if (ratedProblems.length === 0) {
             initializeEmptyDifficultyChart();
-            document.querySelector('.chart-container:nth-child(2) h2').textContent = 
+            document.querySelector('.chart-container:nth-child(2) h2').textContent =
                 'Problem Difficulty Distribution (No rated problems found)';
             return;
         }
-        
+
         // Define difficulty ranges and their labels
         const difficultyRanges = [
             { min: 800, max: 899, label: '800' },
@@ -693,38 +693,38 @@ document.addEventListener('DOMContentLoaded', function() {
             { min: 2900, max: 2999, label: '2900' },
             { min: 3000, max: 3500, label: '3000+' }
         ];
-        
+
         // Count problems in each range
         const distributionData = difficultyRanges.map(range => {
             return {
                 label: range.label,
-                count: ratedProblems.filter(problem => 
-                    problem.rating >= range.min && 
+                count: ratedProblems.filter(problem =>
+                    problem.rating >= range.min &&
                     (range.max === 3500 ? problem.rating >= range.min : problem.rating <= range.max)
                 ).length
             };
         });
-        
+
         // Filter out empty ranges to keep chart clean
         const nonEmptyDistribution = distributionData.filter(item => item.count > 0);
-        
+
         // If after filtering out empty ranges we have no data, show empty chart
         if (nonEmptyDistribution.length === 0) {
             initializeEmptyDifficultyChart();
             return;
         }
-        
+
         // Colors for different difficulty levels (matching Codeforces colors)
         const backgroundColors = nonEmptyDistribution.map(item => {
             const rangeMidpoint = parseInt(item.label.split('-')[0]) + 100;
             return getDifficultyColor(rangeMidpoint);
         });
-        
+
         // Free up existing chart if it exists
         if (window.difficultyChart instanceof Chart) {
             window.difficultyChart.destroy();
         }
-        
+
         // Create a bar chart for difficulty distribution
         const difficultyCtx = document.getElementById('difficultyChart').getContext('2d');
         window.difficultyChart = new Chart(difficultyCtx, {
@@ -748,7 +748,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 return `Problems solved: ${context.raw}`;
                             }
                         }
@@ -794,7 +794,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.difficultyChart instanceof Chart) {
             window.difficultyChart.destroy();
         }
-        
+
         const difficultyCtx = document.getElementById('difficultyChart').getContext('2d');
         window.difficultyChart = new Chart(difficultyCtx, {
             type: 'bar',
@@ -835,9 +835,247 @@ document.addEventListener('DOMContentLoaded', function() {
         // We'll add other empty charts as we implement them
     }
 
-    // Placeholder for fetching submission statistics
+    // Function to fetch submission verdict statistics
     async function fetchSubmissionStats(handle) {
-        // Will be implemented later
+        try {
+            // Show loading state
+            const chartContainer = document.querySelectorAll('.chart-section')[1].querySelectorAll('.chart-container')[1];
+
+            chartContainer.innerHTML = '<h2>Submissions by Verdict</h2><div class="loading">Loading submission data...</div>';
+            chartContainer.innerHTML += '<canvas id="verdictChart"></canvas>';
+
+            console.log("Fetching submission verdicts for handle:", handle);
+
+            // Get submission verdicts from our backend API
+            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/submission-verdicts/${handle}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": token
+                }
+            });
+
+            console.log("API response status:", response.status);
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch submission verdicts");
+            }
+
+            const verdictData = await response.json();
+            console.log("Verdict data received:", verdictData);
+
+            // Remove loading message if it exists
+            const loadingElement = chartContainer.querySelector('.loading');
+            if (loadingElement) loadingElement.remove();
+
+            // If we have data, update the chart
+            if (verdictData && verdictData.verdicts && verdictData.verdicts.length > 0) {
+                updateVerdictChart(verdictData);
+            } else {
+                // No verdict data
+                chartContainer.querySelector('h2').textContent = 'Submissions by Verdict (No submissions found)';
+                initializeEmptyVerdictChart();
+            }
+        } catch (error) {
+            console.error("Error fetching submission verdicts:", error);
+            // Show error in chart container
+            const chartContainer = document.querySelector('.chart-container:nth-child(4)');
+            chartContainer.innerHTML = '<h2>Submissions by Verdict</h2><div class="error">Failed to load submission data</div>';
+            chartContainer.innerHTML += '<canvas id="verdictChart"></canvas>';
+            initializeEmptyVerdictChart();
+        }
+    }
+
+    // Function to update the verdict chart with actual verdict data
+    function updateVerdictChart(verdictData) {
+        if (!verdictData || !verdictData.verdicts || verdictData.verdicts.length === 0) {
+            console.log("No verdict data available");
+            initializeEmptyVerdictChart();
+            return;
+        }
+
+        // Prepare data for the chart
+        const verdicts = verdictData.verdicts;
+
+        // Map Codeforces verdict codes to more readable names
+        const verdictNames = {
+            'OK': 'Accepted',
+            'WRONG_ANSWER': 'Wrong Answer',
+            'TIME_LIMIT_EXCEEDED': 'Time Limit',
+            'MEMORY_LIMIT_EXCEEDED': 'Memory Limit',
+            'RUNTIME_ERROR': 'Runtime Error',
+            'COMPILATION_ERROR': 'Compilation Error',
+            'SKIPPED': 'Skipped',
+            'REJECTED': 'Rejected',
+            'PRESENTATION_ERROR': 'Presentation Error',
+            'FAILED': 'Failed',
+            'PARTIAL': 'Partial',
+            'CHALLENGED': 'Challenged',
+            'INPUT_PREPARATION_CRASHED': 'Input Crashed',
+            'CRASHED': 'Crashed',
+            'TESTING': 'Testing',
+            'SUBMITTED': 'Submitted'
+        };
+
+        // Map verdict codes to colors
+        const verdictColors = {
+            'OK': '#44BB77',                    // Green
+            'WRONG_ANSWER': '#FF5555',          // Red
+            'TIME_LIMIT_EXCEEDED': '#FFBB55',   // Orange
+            'MEMORY_LIMIT_EXCEEDED': '#FFDD55', // Yellow
+            'RUNTIME_ERROR': '#FF88AA',         // Pink
+            'COMPILATION_ERROR': '#AAAAFF',     // Light Blue
+            'SKIPPED': '#AAAAAA',               // Gray
+            'REJECTED': '#BB5555',              // Dark Red
+            'PRESENTATION_ERROR': '#DDAA77',    // Light Brown
+            'FAILED': '#DD5555',                // Dark Red
+            'PARTIAL': '#77BBFF',               // Light Blue
+            'CHALLENGED': '#FF77AA',            // Pink
+            'INPUT_PREPARATION_CRASHED': '#DDDDDD', // Light Gray
+            'CRASHED': '#DD7777',               // Light Red
+            'TESTING': '#77DDFF',               // Light Blue
+            'SUBMITTED': '#77DDDD'              // Cyan
+        };
+
+        // Prepare the data for Chart.js
+        const labels = verdicts.map(verdict => verdictNames[verdict.verdict] || verdict.verdict);
+        const data = verdicts.map(verdict => verdict.count);
+        const backgroundColor = verdicts.map(verdict => verdictColors[verdict.verdict] || '#777777');
+
+        // Free up existing chart if it exists
+        if (window.verdictChart instanceof Chart) {
+            window.verdictChart.destroy();
+        }
+
+        // Create a new pie chart
+        const verdictCtx = document.getElementById('verdictChart').getContext('2d');
+        window.verdictChart = new Chart(verdictCtx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColor,
+                    borderColor: '#FFFFFF',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 15,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round(value / total * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Function to initialize an empty verdict chart
+    function initializeEmptyVerdictChart() {
+        // Free up existing chart if it exists
+        if (window.verdictChart instanceof Chart) {
+            window.verdictChart.destroy();
+        }
+
+        // Create an empty chart with "No data" message
+        const verdictCtx = document.getElementById('verdictChart').getContext('2d');
+        window.verdictChart = new Chart(verdictCtx, {
+            type: 'pie',
+            data: {
+                labels: ['No Data'],
+                datasets: [{
+                    data: [1],
+                    backgroundColor: ['#DDDDDD'],
+                    borderColor: '#FFFFFF',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function () {
+                                return 'No submission data available';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    // Function to initialize empty charts when no data is available
+    function initializeEmptyCharts() {
+        initializeEmptyRatingChart();
+        initializeEmptyVerdictChart();
+        // Add other empty chart initializers here as you develop them
+    }
+
+    // Function to initialize an empty rating chart
+    function initializeEmptyRatingChart() {
+        // Free up existing chart if it exists
+        if (window.ratingChart instanceof Chart) {
+            window.ratingChart.destroy();
+        }
+
+        // Create an empty chart with "No data" message
+        const ratingCtx = document.getElementById('ratingChart').getContext('2d');
+        window.ratingChart = new Chart(ratingCtx, {
+            type: 'line',
+            data: {
+                labels: ['No Data'],
+                datasets: [{
+                    label: 'Rating',
+                    data: [0],
+                    borderColor: '#CCCCCC',
+                    backgroundColor: 'rgba(0, 0, 0, 0.1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
     }
 
     // Start by fetching the user profile
