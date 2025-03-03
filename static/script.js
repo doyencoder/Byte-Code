@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
       localStorage.setItem("token", data.token);
       // localStorage.setItem("email", data.email);
       alert("Login successful!");
-      window.location.href = "home.html";
+      window.location.href = "dashboard.html";
     } else {
       alert(data.error || "Login failed");
     }
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Response received:", data); // Debugging
     if (data.message) {
       alert("Signup successful! Redirecting to home page.");
-      window.location.href = "home.html";
+      window.location.href = "dashboard.html";
     } else {
       alert(data.error || "Signup failed");
     }
@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.querySelector("#homeLink").addEventListener("click", (event) => {
     event.preventDefault();
-    checkAuthAndNavigate("home.html");
+    checkAuthAndNavigate("dashboard.html");
   });
 
   document.querySelector("#contestLink").addEventListener("click", (event) => {
