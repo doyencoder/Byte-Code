@@ -161,4 +161,77 @@ router.get("/rating-history/:handle", authMiddleware, async (req, res) => {
     }
 });
 
+// NEW ENDPOINT: Route to fetch problem tags distribution for a user
+router.get("/problem-tags/:handle", authMiddleware, async (req, res) => {
+    try {
+        const { handle } = req.params;
+        
+        if (!handle) {
+            return res.status(400).json({ error: "Codeforces handle is required" });
+        }
+        
+        // Fetch user submissions from Codeforces API
+        const response = await axios.get(`https://codeforces.com/api/user.status?handle=${handle}`);
+        
+        // Check if the API response is successful
+        if (response.data.status !== "OK") {
+            return res.status(400).json({ error: "Failed to fetch submission data from Codeforces" });
+        }
+        
+        // Process the submissions to get problem tags distribution
+        const submissions = response.data.result;
+        
+        // Track unique solved problems by problem ID to avoid counting the same problem multiple times
+        const solvedProblems = new Map();
+        
+        // Process each submission
+        submissions.forEach(submission => {
+            // Only count successful submissions (Accepted verdict)
+            if (submission.verdict === "OK") {
+                const problemId = `${submission.problem.contestId}-${submission.problem.index}`;
+                
+                // If we haven't processed this problem yet, add it
+                if (!solvedProblems.has(problemId)) {
+                    // Store the problem with its tags
+                    solvedProblems.set(problemId, submission.problem.tags);
+                }
+            }
+        });
+        
+        // Count occurrences of each tag
+        const tagCounts = {};
+        
+        // Count each tag from each unique solved problem
+        solvedProblems.forEach((tags) => {
+            tags.forEach(tag => {
+                if (!tagCounts[tag]) {
+                    tagCounts[tag] = 0;
+                }
+                tagCounts[tag]++;
+            });
+        });
+        
+        // Convert to array of objects for easier frontend processing
+        const tagsArray = Object.keys(tagCounts).map(tag => ({
+            tag: tag,
+            count: tagCounts[tag]
+        }));
+        
+        // Sort by count (descending)
+        tagsArray.sort((a, b) => b.count - a.count);
+        
+        // Get the total number of unique solved problems
+        const totalSolvedProblems = solvedProblems.size;
+        
+        res.json({
+            totalSolvedProblems,
+            tags: tagsArray
+        });
+        
+    } catch (error) {
+        console.error("Error fetching problem tags:", error.message);
+        res.status(500).json({ error: "Failed to fetch problem tags distribution" });
+    }
+});
+
 module.exports = router;

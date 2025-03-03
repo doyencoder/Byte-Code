@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // If user has a handle, fetch additional Codeforces data
             if (userData.handle && userData.handle !== "Not linked") {
                 fetchRatingHistory(userData.handle);
+                fetchProblemTags(userData.handle); // Add this line to fetch problem tags
                 fetchProblemStats(userData.handle);
                 fetchSubmissionStats(userData.handle);
             } else {
@@ -362,10 +363,201 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.stats-overview .stat-card:nth-child(3) .stat-value').textContent = diffDays.toString();
     }
 
+    // Function to fetch problem tags distribution
+    async function fetchProblemTags(handle) {
+        
+        try {
+            // Show loading state
+            const chartContainer = document.querySelectorAll('.chart-section')[1].querySelector('.chart-container');
+
+            if (!chartContainer) {
+                console.log("Chart container not found, creating it");
+                const chartsSection = document.querySelector('.charts-section') || document.body;
+                chartContainer = document.createElement('div');
+                chartContainer.className = 'chart-container';
+                chartsSection.appendChild(chartContainer);
+            }
+            
+            chartContainer.innerHTML = '<h2>Problem Tags Distribution</h2><div class="loading">Loading problem tags data...</div>';
+            console.log("debug1");
+            chartContainer.innerHTML += '<canvas id="tagsChart"></canvas>';
+            
+            console.log("Fetching problem tags for handle:", handle);
+            
+            // Get problem tags from our backend API
+            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/problem-tags/${handle}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": token
+                }
+            });
+            
+            console.log("Problem tags API response status:", response.status);
+            
+            if (!response.ok) {
+                throw new Error("Failed to fetch problem tags data");
+            }
+            
+            const tagsData = await response.json();
+            console.log("Problem tags data received:", tagsData);
+            
+            // Remove loading message
+            const loadingElement = chartContainer.querySelector('.loading');
+            if (loadingElement) loadingElement.remove();
+            
+            // Update the chart with the data
+            if (tagsData && tagsData.tags && tagsData.tags.length > 0) {
+                updateProblemTagsChart(tagsData);
+            } else {
+                // No tags data available
+                chartContainer.querySelector('h2').textContent = 'Problem Tags Distribution (No data available)';
+                initializeEmptyTagsChart();
+            }
+        } catch (error) {
+            console.error("Error fetching problem tags:", error);
+            // Show error in chart container
+            const chartContainer = document.querySelector('.chart-container:nth-child(3)');
+            chartContainer.innerHTML = '<h2>Problem Tags Distribution</h2><div class="error">Failed to load problem tags data</div>';
+            chartContainer.innerHTML += '<canvas id="tagsChart"></canvas>';
+            initializeEmptyTagsChart();
+        }
+    }
+    
+    // Function to update the problem tags chart
+    function updateProblemTagsChart(tagsData) {
+        // Extract tags and their counts
+        const tagNames = tagsData.tags.map(item => item.tag);
+        const tagCounts = tagsData.tags.map(item => item.count);
+        
+        // Generate colors for each tag
+        const backgroundColors = generateTagColors(tagNames.length);
+        
+        // If an existing chart exists, destroy it
+        if (window.tagsChart instanceof Chart) {
+            window.tagsChart.destroy();
+        }
+        
+        // Create the pie chart
+        const tagsCtx = document.getElementById('tagsChart').getContext('2d');
+        window.tagsChart = new Chart(tagsCtx, {
+            type: 'pie',
+            data: {
+                labels: tagNames,
+                datasets: [{
+                    data: tagCounts,
+                    backgroundColor: backgroundColors,
+                    borderColor: 'rgba(255, 255, 255, 0.8)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 15,
+                            padding: 10,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((acc, curr) => acc + curr, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Update the chart title to include total problems solved
+        const chartTitle = document.querySelector('.chart-container:nth-child(3) h2');
+        chartTitle.textContent = `Problem Tags Distribution (${tagsData.totalSolvedProblems} Problems Solved)`;
+    }
+    
+    // Function to generate random colors for tags
+    function generateTagColors(count) {
+        // Predefined colors for common problem tags
+        const tagColorMap = {
+            'implementation': 'rgba(54, 162, 235, 0.8)',
+            'math': 'rgba(255, 99, 132, 0.8)',
+            'greedy': 'rgba(255, 206, 86, 0.8)',
+            'dp': 'rgba(75, 192, 192, 0.8)',
+            'data structures': 'rgba(153, 102, 255, 0.8)',
+            'brute force': 'rgba(255, 159, 64, 0.8)',
+            'constructive algorithms': 'rgba(199, 199, 199, 0.8)',
+            'graphs': 'rgba(83, 180, 153, 0.8)',
+            'binary search': 'rgba(255, 99, 71, 0.8)',
+            'sortings': 'rgba(189, 195, 199, 0.8)',
+            'strings': 'rgba(46, 204, 113, 0.8)',
+            'dfs and similar': 'rgba(155, 89, 182, 0.8)',
+            'trees': 'rgba(52, 152, 219, 0.8)',
+            'number theory': 'rgba(231, 76, 60, 0.8)',
+            'combinatorics': 'rgba(241, 196, 15, 0.8)'
+        };
+        
+        // Generate colors array
+        const colors = [];
+        for (let i = 0; i < count; i++) {
+            if (i < Object.keys(tagColorMap).length) {
+                // Use predefined colors first
+                colors.push(Object.values(tagColorMap)[i]);
+            } else {
+                // Generate random colors for any additional tags
+                const r = Math.floor(Math.random() * 255);
+                const g = Math.floor(Math.random() * 255);
+                const b = Math.floor(Math.random() * 255);
+                colors.push(`rgba(${r}, ${g}, ${b}, 0.8)`);
+            }
+        }
+        
+        return colors;
+    }
+    
+    // Initialize empty tags chart
+    function initializeEmptyTagsChart() {
+        if (window.tagsChart instanceof Chart) {
+            window.tagsChart.destroy();
+        }
+        
+        const tagsCtx = document.getElementById('tagsChart').getContext('2d');
+        window.tagsChart = new Chart(tagsCtx, {
+            type: 'pie',
+            data: {
+                labels: ['No Data'],
+                datasets: [{
+                    data: [1],
+                    backgroundColor: ['rgba(200, 200, 200, 0.8)'],
+                    borderColor: 'rgba(255, 255, 255, 0.8)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    }
+
     // Initialize empty charts when no data is available
     function initializeEmptyCharts() {
         initializeEmptyRatingChart();
-        // We'll add other empty charts later as we implement them
+        initializeEmptyTagsChart();
+        // Other empty charts initialization will be added as we implement them
     }
 
     // Initialize empty rating chart

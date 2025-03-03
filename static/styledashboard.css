@@ -220,3 +220,6 @@ canvas {
         font-size: 14px;
     }
 }
+canvas#tagsChart {
+    background-color: transparent !important;
+}
