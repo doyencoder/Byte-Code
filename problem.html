@@ -27,12 +27,11 @@
                 <div class="nav-buttons">
                     <button id="logoutbtn" style="display: flex;">Logout</button>
                 </div>
-                <div class="menu-icon" onclick="toggleMenu()">&#9776;</div> <!-- ☰ Menu Icon -->
+                <div class="menu-icon" onclick="toggleMenu()">&#9776;</div>
             </nav>
-    
-    
+
             <div class="mobile-menu">
-                <span class="close-btn" onclick="closeMenu()">&#10006;</span> <!-- ✖ Close Button -->
+                <span class="close-btn" onclick="closeMenu()">&#10006;</span>
                 <ul>
                     <li><a href="home.html">Home</a></li>
                     <li><a href="contest.html">Contests</a></li>
@@ -41,16 +40,22 @@
                 </ul>
                 <div class="nav-buttons2">
                     <button id="logoutbtn" style="display: flex;">Logout</button>
-    
                 </div>
             </div>
         </div>
-    
+
         <div class="container">
             <!-- Problem List -->
             <div class="problem-list">
                 <h2>Problems</h2>
-                <button class="refresh-btn" onclick="refreshStatus()">🔄 Refresh Status</button>
+                <div class="problem-header">
+                    <button class="refresh-btn" onclick="refreshStatus()">🔄 Refresh Status</button>
+                    <div class="page-controls">
+                        <button onclick="prevPage()" class="page-btn">Previous</button>
+                        <span id="page-info">Page 1</span>
+                        <button onclick="nextPage()" class="page-btn">Next</button>
+                    </div>
+                </div>
                 <table>
                     <thead>
                         <tr>
@@ -64,134 +69,397 @@
                         <!-- Problems will be added dynamically -->
                     </tbody>
                 </table>
+                <div id="loading" class="loading">Loading problems...</div>
             </div>
-    
+
             <!-- Filters & Charts -->
-            <div class="analytics-section">    
+            <div class="analytics-section">
+                <div class="user-profile-summary">
+                    <h3>Your Profile</h3>
+                    <div class="user-info">
+                        <p>Username: <span id="username">User123</span></p>
+                        <p>Rank: <span id="userRank">#42</span></p>
+                        <p>Total Solved: <span id="totalSolved">0</span></p>
+                    </div>
+                </div>
+
                 <!-- Filters -->
-                <label for="ratingFilter">Choose Rating:</label>
-                <select id="ratingFilter" onchange="filterProblems()">
-                    <option value="all">All</option>
-                    <option value="800">800</option>
-                    <option value="900">900</option>
-                    <option value="1000">1000</option>
-                    <option value="1100">1100</option>
-                    <option value="1200">1200</option>
-                    <option value="1300">1300</option>
-                    <option value="1400">1400</option>
-                    <option value="1500">1500</option>
-                </select>
-    
-                <label for="statusFilter">Problem Status:</label>
-                <select id="statusFilter" onchange="filterProblems()">
-                    <option value="all">All</option>
-                    <option value="solved">Solved</option>
-                    <option value="unsolved">Unsolved</option>
-                </select>
-    
-                <h2>Analytics</h2>
+                <div class="filters">
+                    <h3>Filters</h3>
+                    <label for="ratingFilter">Choose Rating:</label>
+                    <select id="ratingFilter" onchange="filterProblems()">
+                        <option value="all">All</option>
+                        <option value="800">800</option>
+                        <option value="900">900</option>
+                        <option value="1000">1000</option>
+                        <option value="1100">1100</option>
+                        <option value="1200">1200</option>
+                        <option value="1300">1300</option>
+                        <option value="1400">1400</option>
+                        <option value="1500">1500</option>
+                        <option value="1600">1600</option>
+                        <option value="1700">1700</option>
+                        <option value="1800">1800</option>
+                        <option value="1900">1900</option>
+                        <option value="2000">2000</option>
+                    </select>
+
+                    <label for="statusFilter">Problem Status:</label>
+                    <select id="statusFilter" onchange="filterProblems()">
+                        <option value="all">All</option>
+                        <option value="solved">Solved</option>
+                        <option value="unsolved">Unsolved</option>
+                    </select>
+                </div>
+
+                <h3>Your Analytics</h3>
 
                 <!-- Chart Container -->
-                <canvas id="solvedChart"></canvas>
-                <canvas id="ratingChart"></canvas>
+                <div class="chart-container">
+                    <canvas id="solvedChart"></canvas>
+                    <div class="chart-label">Solved vs Unsolved</div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="ratingChart"></canvas>
+                    <div class="chart-label">Problems by Rating</div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                    <div class="chart-label">Solving Progress (Last 7 days)</div>
+                </div>
             </div>
         </div>
     </div>
 
-    
-
     <script>
-        // Sample Problem Data
-        const problems = [
-            { title: "A+B Problem", rating: 800, status: "unsolved", link: "https://codeforces.com/problemset/problem/1/A" },
-            { title: "Two Sum", rating: 1000, status: "solved", link: "https://codeforces.com/problemset/problem/2/B" },
-            { title: "Binary Search", rating: 1200, status: "unsolved", link: "https://codeforces.com/problemset/problem/3/C" },
-            { title: "DFS Basics", rating: 1400, status: "solved", link: "https://codeforces.com/problemset/problem/4/D" },
-            { title: "Graph Shortest Path", rating: 1500, status: "unsolved", link: "https://codeforces.com/problemset/problem/5/E" },
-            { title: "Sorting Algorithm", rating: 1100, status: "solved", link: "https://codeforces.com/problemset/problem/6/F" },
-        ];
-
-        // Function to display problems
-        function displayProblems(problemList) {
+        // Global variables
+        let allProblems = [];
+        let currentProblems = [];
+        let currentPage = 1;
+        const problemsPerPage = 10;
+        const currentUser = {
+            username: "User123",
+            rank: 42,
+            solvedProblems: new Set() // Store problem IDs that are solved
+        };
+        
+        // Function to fetch problems from Codeforces
+        async function fetchProblems() {
+            // In a real implementation, you would fetch from Codeforces API
+            // For demonstration, we'll create sample data with 30 problems per rating
+            document.getElementById("loading").style.display = "block";
+            
+            try {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                allProblems = [];
+                
+                // Create 30 problems for each rating from 800 to 2000
+                for (let rating = 800; rating <= 2000; rating += 100) {
+                    for (let i = 1; i <= 30; i++) {
+                        const problemId = `${rating}-${i}`;
+                        allProblems.push({
+                            id: problemId,
+                            title: `Problem ${i} (${rating})`,
+                            rating: rating,
+                            status: currentUser.solvedProblems.has(problemId) ? "solved" : "unsolved",
+                            link: `https://codeforces.com/problemset/problem/${Math.floor(Math.random() * 1000)}/${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`
+                        });
+                    }
+                }
+                
+                // Load from localStorage if available
+                loadUserProgress();
+                
+                // Update UI
+                filterProblems();
+                updateUserInfo();
+                
+            } catch (error) {
+                console.error("Error fetching problems:", error);
+            } finally {
+                document.getElementById("loading").style.display = "none";
+            }
+        }
+        
+        // Function to display problems on the current page
+        function displayProblems() {
+            const startIdx = (currentPage - 1) * problemsPerPage;
+            const endIdx = startIdx + problemsPerPage;
+            const pageProblems = currentProblems.slice(startIdx, endIdx);
+            
             const tableBody = document.getElementById("problemTable");
             tableBody.innerHTML = "";
-
-            problemList.forEach(problem => {
-                const row = `<tr>
-            <td>${problem.title}</td>
-            <td>${problem.rating}</td>
-            <td class="${problem.status}">${problem.status.charAt(0).toUpperCase() + problem.status.slice(1)}</td>
-            <td><a href="${problem.link}" target="_blank">Solve</a></td>
-        </tr>`;
+            
+            if (pageProblems.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="no-results">No problems match your filters</td></tr>`;
+                return;
+            }
+            
+            pageProblems.forEach(problem => {
+                const row = `<tr data-id="${problem.id}">
+                    <td>${problem.title}</td>
+                    <td>${problem.rating}</td>
+                    <td class="${problem.status}">${problem.status.charAt(0).toUpperCase() + problem.status.slice(1)}</td>
+                    <td><a href="${problem.link}" target="_blank" class="solve-btn">Solve</a></td>
+                </tr>`;
                 tableBody.innerHTML += row;
             });
-
+            
+            document.getElementById("page-info").textContent = `Page ${currentPage} of ${Math.ceil(currentProblems.length / problemsPerPage)}`;
+            
             updateCharts();
         }
-
+        
+        // Navigation functions
+        function nextPage() {
+            const maxPage = Math.ceil(currentProblems.length / problemsPerPage);
+            if (currentPage < maxPage) {
+                currentPage++;
+                displayProblems();
+                window.scrollTo(0, 0);
+            }
+        }
+        
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayProblems();
+                window.scrollTo(0, 0);
+            }
+        }
+        
         // Function to filter problems based on rating & status
         function filterProblems() {
             const selectedRating = document.getElementById("ratingFilter").value;
             const selectedStatus = document.getElementById("statusFilter").value;
-
-            let filteredProblems = problems;
-
-            if (selectedRating !== "all") {
-                filteredProblems = filteredProblems.filter(problem => problem.rating == selectedRating);
-            }
-
-            if (selectedStatus !== "all") {
-                filteredProblems = filteredProblems.filter(problem => problem.status === selectedStatus);
-            }
-
-            displayProblems(filteredProblems);
+            
+            currentProblems = allProblems.filter(problem => {
+                const ratingMatch = selectedRating === "all" || problem.rating == selectedRating;
+                const statusMatch = selectedStatus === "all" || problem.status === selectedStatus;
+                return ratingMatch && statusMatch;
+            });
+            
+            // Reset to first page when filtering
+            currentPage = 1;
+            displayProblems();
         }
-
+        
+        // Function to update user info in the sidebar
+        function updateUserInfo() {
+            document.getElementById("username").textContent = currentUser.username;
+            document.getElementById("userRank").textContent = `#${currentUser.rank}`;
+            document.getElementById("totalSolved").textContent = currentUser.solvedProblems.size;
+        }
+        
         // Function to update the charts
         function updateCharts() {
-            const solvedCount = problems.filter(p => p.status === "solved").length;
-            const unsolvedCount = problems.filter(p => p.status === "unsolved").length;
-
+            const solvedCount = allProblems.filter(p => p.status === "solved").length;
+            const unsolvedCount = allProblems.filter(p => p.status === "unsolved").length;
+            
+            // Get counts by rating
             const ratingCounts = {};
-            problems.forEach(problem => {
-                if (!ratingCounts[problem.rating]) ratingCounts[problem.rating] = 0;
+            const solvedByRating = {};
+            
+            allProblems.forEach(problem => {
+                if (!ratingCounts[problem.rating]) {
+                    ratingCounts[problem.rating] = 0;
+                    solvedByRating[problem.rating] = 0;
+                }
+                
                 ratingCounts[problem.rating]++;
+                
+                if (problem.status === "solved") {
+                    solvedByRating[problem.rating]++;
+                }
             });
-
+            
+            // Sort ratings for display
+            const sortedRatings = Object.keys(ratingCounts).sort((a, b) => a - b);
+            
+            // Clear previous charts
+            const charts = document.querySelectorAll('.chart-container canvas');
+            charts.forEach(canvas => {
+                if (canvas.chart) {
+                    canvas.chart.destroy();
+                }
+            });
+            
             // Solved/Unsolved Chart
-            new Chart(document.getElementById("solvedChart"), {
-                type: "pie",
+            const solvedCtx = document.getElementById("solvedChart");
+            solvedCtx.chart = new Chart(solvedCtx, {
+                type: "doughnut",
                 data: {
                     labels: ["Solved", "Unsolved"],
                     datasets: [{
                         data: [solvedCount, unsolvedCount],
                         backgroundColor: ["#28a745", "#dc3545"]
                     }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
                 }
             });
-
+            
             // Rating Distribution Chart
-            new Chart(document.getElementById("ratingChart"), {
+            const ratingCtx = document.getElementById("ratingChart");
+            ratingCtx.chart = new Chart(ratingCtx, {
                 type: "bar",
                 data: {
-                    labels: Object.keys(ratingCounts),
+                    labels: sortedRatings,
+                    datasets: [
+                        {
+                            label: "Total",
+                            data: sortedRatings.map(rating => ratingCounts[rating]),
+                            backgroundColor: "#007bff"
+                        },
+                        {
+                            label: "Solved",
+                            data: sortedRatings.map(rating => solvedByRating[rating]),
+                            backgroundColor: "#28a745"
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Problem Rating'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Number of Problems'
+                            },
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Progress Chart (last 7 days)
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            // Mock data for solved problems per day
+            const dailySolved = [3, 5, 2, 0, 7, 4, 6]; 
+            
+            const progressCtx = document.getElementById("progressChart");
+            progressCtx.chart = new Chart(progressCtx, {
+                type: "line",
+                data: {
+                    labels: days,
                     datasets: [{
-                        label: "Number of Problems",
-                        data: Object.values(ratingCounts),
-                        backgroundColor: "#007bff"
+                        label: "Problems Solved",
+                        data: dailySolved,
+                        borderColor: "#17a2b8",
+                        backgroundColor: "rgba(23, 162, 184, 0.2)",
+                        tension: 0.3,
+                        fill: true
                     }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Problems Solved'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
                 }
             });
         }
-
+        
+        // Function to refresh problem status
+        function refreshStatus() {
+            // In a real implementation, you would:
+            // 1. Fetch the user's submission history from Codeforces API
+            // 2. Update the status of problems based on the submission history
+            
+            // For demonstration, we'll randomly mark some problems as solved
+            if (allProblems.length > 0) {
+                const unsolved = allProblems.filter(p => p.status === "unsolved");
+                if (unsolved.length > 0) {
+                    // Randomly mark 1-5 problems as solved
+                    const numToSolve = Math.min(Math.floor(Math.random() * 5) + 1, unsolved.length);
+                    
+                    for (let i = 0; i < numToSolve; i++) {
+                        const idx = Math.floor(Math.random() * unsolved.length);
+                        const problem = unsolved[idx];
+                        problem.status = "solved";
+                        currentUser.solvedProblems.add(problem.id);
+                        unsolved.splice(idx, 1);
+                    }
+                    
+                    // Save progress to localStorage
+                    saveUserProgress();
+                    
+                    // Update UI
+                    filterProblems();
+                    updateUserInfo();
+                    
+                    alert(`Refreshed! ${numToSolve} new problems marked as solved.`);
+                } else {
+                    alert("Amazing! You've solved all the problems!");
+                }
+            }
+        }
+        
+        // Functions to save and load user progress
+        function saveUserProgress() {
+            localStorage.setItem('solvedProblems', JSON.stringify([...currentUser.solvedProblems]));
+        }
+        
+        function loadUserProgress() {
+            const savedProblems = localStorage.getItem('solvedProblems');
+            if (savedProblems) {
+                currentUser.solvedProblems = new Set(JSON.parse(savedProblems));
+                
+                // Update problem statuses
+                allProblems.forEach(problem => {
+                    if (currentUser.solvedProblems.has(problem.id)) {
+                        problem.status = "solved";
+                    }
+                });
+            }
+        }
+        
         // Initialize with all problems
         document.addEventListener("DOMContentLoaded", () => {
-            displayProblems(problems);
+            fetchProblems();
+            
+            // Handle browser page refresh
+            window.addEventListener('beforeunload', () => {
+                saveUserProgress();
+            });
         });
-
     </script>
     <script src="static/script.js"></script>
-
 </body>
 
 </html>
