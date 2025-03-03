@@ -414,9 +414,233 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Placeholder for fetching problem statistics
+    // Replace the placeholder fetchProblemStats function with this implementation
     async function fetchProblemStats(handle) {
-        // Will be implemented later
+        try {
+            // Show loading state for difficulty chart
+            const difficultyChartContainer = document.querySelector('.chart-container:nth-child(2)');
+            difficultyChartContainer.innerHTML = '<h2>Problem Difficulty Distribution</h2><div class="loading">Loading problem data...</div>';
+            difficultyChartContainer.innerHTML += '<canvas id="difficultyChart"></canvas>';
+            
+            console.log("Fetching solved problems for handle:", handle);
+            
+            // Get solved problems from our backend API
+            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/solved-problems/${handle}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": token
+                }
+            });
+            
+            console.log("API response status for solved problems:", response.status);
+            
+            if (!response.ok) {
+                throw new Error("Failed to fetch solved problems");
+            }
+            
+            const solvedProblems = await response.json();
+            console.log("Solved problems data received:", solvedProblems);
+            
+            // Remove loading message
+            const loadingElement = difficultyChartContainer.querySelector('.loading');
+            if (loadingElement) loadingElement.remove();
+            
+            // Process and display the data
+            if (solvedProblems && solvedProblems.length > 0) {
+                updateDifficultyChart(solvedProblems);
+            } else {
+                // No problems solved
+                difficultyChartContainer.querySelector('h2').textContent = 'Problem Difficulty Distribution (No problems found)';
+                initializeEmptyDifficultyChart();
+            }
+        } catch (error) {
+            console.error("Error fetching solved problems:", error);
+            // Show error in chart container
+            const difficultyChartContainer = document.querySelector('.chart-container:nth-child(2)');
+            difficultyChartContainer.innerHTML = '<h2>Problem Difficulty Distribution</h2><div class="error">Failed to load problem data</div>';
+            difficultyChartContainer.innerHTML += '<canvas id="difficultyChart"></canvas>';
+            initializeEmptyDifficultyChart();
+        }
+    }
+
+    // Function to update the difficulty distribution chart
+    function updateDifficultyChart(problems) {
+        // First, filter out problems that don't have a rating
+        const ratedProblems = problems.filter(problem => problem.rating);
+        
+        if (ratedProblems.length === 0) {
+            initializeEmptyDifficultyChart();
+            document.querySelector('.chart-container:nth-child(2) h2').textContent = 
+                'Problem Difficulty Distribution (No rated problems found)';
+            return;
+        }
+        
+        // Define difficulty ranges and their labels
+        const difficultyRanges = [
+            { min: 800, max: 899, label: '800' },
+            { min: 900, max: 999, label: '900' },
+            { min: 1000, max: 1099, label: '1000' },
+            { min: 1100, max: 1199, label: '1100' },
+            { min: 1200, max: 1299, label: '1200' },
+            { min: 1300, max: 1399, label: '1300' },
+            { min: 1400, max: 1499, label: '1400' },
+            { min: 1500, max: 1599, label: '1500' },
+            { min: 1600, max: 1699, label: '1600' },
+            { min: 1700, max: 1799, label: '1700' },
+            { min: 1800, max: 1899, label: '1800' },
+            { min: 1900, max: 1999, label: '1900' },
+            { min: 2000, max: 2099, label: '2000' },
+            { min: 2100, max: 2199, label: '2100' },
+            { min: 2200, max: 2299, label: '2200' },
+            { min: 2300, max: 2399, label: '2300' },
+            { min: 2400, max: 2499, label: '2400' },
+            { min: 2500, max: 2599, label: '2500' },
+            { min: 2600, max: 2699, label: '2600' },
+            { min: 2700, max: 2799, label: '2700' },
+            { min: 2800, max: 2899, label: '2800' },
+            { min: 2900, max: 2999, label: '2900' },
+            { min: 3000, max: 3500, label: '3000+' }
+        ];
+        
+        // Count problems in each range
+        const distributionData = difficultyRanges.map(range => {
+            return {
+                label: range.label,
+                count: ratedProblems.filter(problem => 
+                    problem.rating >= range.min && 
+                    (range.max === 3500 ? problem.rating >= range.min : problem.rating <= range.max)
+                ).length
+            };
+        });
+        
+        // Filter out empty ranges to keep chart clean
+        const nonEmptyDistribution = distributionData.filter(item => item.count > 0);
+        
+        // If after filtering out empty ranges we have no data, show empty chart
+        if (nonEmptyDistribution.length === 0) {
+            initializeEmptyDifficultyChart();
+            return;
+        }
+        
+        // Colors for different difficulty levels (matching Codeforces colors)
+        const backgroundColors = nonEmptyDistribution.map(item => {
+            const rangeMidpoint = parseInt(item.label.split('-')[0]) + 100;
+            return getDifficultyColor(rangeMidpoint);
+        });
+        
+        // Free up existing chart if it exists
+        if (window.difficultyChart instanceof Chart) {
+            window.difficultyChart.destroy();
+        }
+        
+        // Create a bar chart for difficulty distribution
+        const difficultyCtx = document.getElementById('difficultyChart').getContext('2d');
+        window.difficultyChart = new Chart(difficultyCtx, {
+            type: 'bar',
+            data: {
+                labels: nonEmptyDistribution.map(item => item.label),
+                datasets: [{
+                    label: 'Problems Solved',
+                    data: nonEmptyDistribution.map(item => item.count),
+                    backgroundColor: backgroundColors,
+                    borderColor: backgroundColors.map(color => color.replace('0.7', '1')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Problems solved: ${context.raw}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        },
+                        title: {
+                            display: true,
+                            text: 'Number of Problems'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Difficulty Rating'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Get color for a difficulty rating
+    function getDifficultyColor(rating) {
+        if (rating < 1200) return 'rgba(128, 128, 128, 0.7)'; // Gray
+        if (rating < 1400) return 'rgba(0, 128, 0, 0.7)';     // Green
+        if (rating < 1600) return 'rgba(3, 168, 158, 0.7)';   // Cyan
+        if (rating < 1900) return 'rgba(0, 0, 255, 0.7)';     // Blue
+        if (rating < 2100) return 'rgba(170, 0, 170, 0.7)';   // Purple
+        if (rating < 2400) return 'rgba(255, 140, 0, 0.7)';   // Orange
+        if (rating < 2600) return 'rgba(255, 0, 0, 0.7)';     // Red
+        if (rating < 3000) return 'rgba(200, 0, 0, 0.7)';     // Dark Red
+        return 'rgba(150, 0, 0, 0.7)';                       // Darker Red
+    }
+
+    // Initialize empty difficulty chart
+    function initializeEmptyDifficultyChart() {
+        if (window.difficultyChart instanceof Chart) {
+            window.difficultyChart.destroy();
+        }
+        
+        const difficultyCtx = document.getElementById('difficultyChart').getContext('2d');
+        window.difficultyChart = new Chart(difficultyCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Problems Solved',
+                    data: [],
+                    backgroundColor: 'rgba(54, 81, 148, 0.7)',
+                    borderColor: 'rgba(54, 81, 148, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Add to the initialization function
+    function initializeEmptyCharts() {
+        initializeEmptyRatingChart();
+        initializeEmptyDifficultyChart();
+        // We'll add other empty charts as we implement them
     }
 
     // Placeholder for fetching submission statistics

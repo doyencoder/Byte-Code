@@ -52,6 +52,57 @@ router.get("/user/:handle", authMiddleware, async (req, res) => {
     }
 });
 
+// Route to fetch problems solved by a user
+router.get("/solved-problems/:handle", authMiddleware, async (req, res) => {
+    try {
+        const { handle } = req.params;
+        
+        if (!handle) {
+            return res.status(400).json({ error: "Codeforces handle is required" });
+        }
+        
+        // Fetch user's submissions from Codeforces API
+        const response = await axios.get(`https://codeforces.com/api/user.status?handle=${handle}`);
+        
+        // Check if the API response is successful
+        if (response.data.status !== "OK") {
+            return res.status(400).json({ error: "Failed to fetch submissions data from Codeforces" });
+        }
+        
+        // Extract the submissions from the response
+        const submissions = response.data.result;
+        
+        // Extract unique solved problems with their details
+        const solvedProblems = new Map();
+        
+        submissions.forEach(submission => {
+            // Only count problems where verdict is "OK" (accepted)
+            if (submission.verdict === "OK") {
+                const problemKey = `${submission.problem.contestId}-${submission.problem.index}`;
+                
+                // Only add unique problems
+                if (!solvedProblems.has(problemKey)) {
+                    solvedProblems.set(problemKey, {
+                        name: submission.problem.name,
+                        rating: submission.problem.rating, // This is the difficulty rating
+                        tags: submission.problem.tags,
+                        contestId: submission.problem.contestId,
+                        index: submission.problem.index
+                    });
+                }
+            }
+        });
+        
+        // Convert Map to Array
+        const uniqueSolvedProblems = Array.from(solvedProblems.values());
+        
+        res.json(uniqueSolvedProblems);
+    } catch (error) {
+        console.error("Error fetching solved problems:", error.message);
+        res.status(500).json({ error: "Failed to fetch solved problems" });
+    }
+});
+
 
 // ✅ Fetch user data from MongoDB(For profile page)
 router.get("/fetch-user", authMiddleware, async (req, res) => {
