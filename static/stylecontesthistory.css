@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Martel+Sans:wght@600&family=Poppins:wght@300;400;700&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+
+}
+#navbar{
+    height: auto;
+}
+.contest-history-container {
+    padding: 20px;
+    min-height: calc(100vh - 100px);
+    border-radius: 20px;
+}
+#contestnav2 {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    background-color: hsl(224, 100%, 94%);
+}
+
+.edit {
+    padding-top: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+}
+
+.edit-links {
+    list-style: none;
+    display: flex;
+    justify-content: flex-start;
+    /* Align to left */
+    gap: 20px;
+    /* Add spacing between items */
+    padding: 0;
+    margin: 0;
+}
+
+.edit-links li {
+    display: inline;
+}
+
+.edit-links a {
+    text-decoration: none;
+    color: #16295d;
+    font-weight: 500;
+    padding: 8px 20px;
+    border-radius: 5px;
+    transition: background-color 0.25s ease-in-out;
+}
+
+.edit-links a:hover {
+    background-color: hsl(224, 100%, 94%);
+}
+
+.contest-history-container h1 {
+    color: #16295d;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bolder;
+    font-size: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+#contest-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 13px;
+    border-radius: 10px;
+    border: 0px solid beige ;
+}
+
+#contest-history-table thead {
+    background-color: #03206f;
+    color: white;
+    border-radius: 10px;
+}
+
+#contest-history-table th, 
+#contest-history-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+    
+}
+
+#contest-history-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#contest-history-table tr:hover {
+    background-color: #e6e6e6;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    #contest-history-table {
+        font-size: 12px;
+    }
+    
+    #contest-history-table th, 
+    #contest-history-table td {
+        padding: 8px;
+    }
+}
+
+
+
+
+
+
+
+/* Updated stylecontesthistory.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    color: #16295d;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #f5f5f5;
+    text-align: center;
+}
+
+.contest-history-container {
+    max-width: 90%;
+    margin: 30px auto;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+#contest-history-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #03206f;
+    color: white;
+}
+
+td {
+    background-color: #f9f9f9;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* Making table corners rounded */
+th:first-child {
+    border-top-left-radius: 15px;
+}
+
+th:last-child {
+    border-top-right-radius: 15px;
+}
+
+tr:last-child td:first-child {
+    border-bottom-left-radius: 15px;
+}
+
+tr:last-child td:last-child {
+    border-bottom-right-radius: 15px;
+}
+

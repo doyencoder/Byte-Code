@@ -4,6 +4,7 @@
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
+    color: #16295d;
 }
 
 body {
@@ -49,7 +50,7 @@ body {
 }
 
 .page-btn {
-    background-color: #007bff;
+    background-color: #16295d;
     color: white;
     border: none;
     padding: 6px 12px;
@@ -58,7 +59,7 @@ body {
 }
 
 .page-btn:hover {
-    background-color: #0056b3;
+    background-color: #01091f;
 }
 
 .filters-section {
@@ -97,7 +98,7 @@ body {
 }
 
 .reset-btn {
-    background-color: #6c757d;
+    background-color: #16295d;
     color: white;
     border: none;
     padding: 8px 15px;
@@ -108,7 +109,7 @@ body {
 }
 
 .reset-btn:hover {
-    background-color: #5a6268;
+    background-color: #16295d;
 }
 
 table {
@@ -123,7 +124,7 @@ th, td {
 }
 
 th {
-    background-color: #007bff;
+    background-color: #16295d;
     color: white;
     position: sticky;
     top: 0;
@@ -134,9 +135,9 @@ tr:hover {
 }
 
 td a {
-    color: #007bff;
+    color: #16295d;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 800;
     transition: all 0.3s ease;
 }
 
@@ -193,11 +194,11 @@ select {
 
 .user-info span {
     font-weight: 500;
-    color: #007bff;
+    color: #16295d;
 }
 .problem-mode-toggle{
     display: flex;
-    justify-content: center;
+    padding-left: 100px;
     align-items: center;
     gap: 50px;
     padding-top: 20px;
