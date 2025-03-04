@@ -166,7 +166,7 @@ router.get("/rating-history/:handle", authMiddleware, async (req, res) => {
     }
 });
 
-// NEW ENDPOINT: Route to fetch problem tags distribution for a user
+// Route to fetch problem tags distribution for a user
 router.get("/problem-tags/:handle", authMiddleware, async (req, res) => {
     try {
         const { handle } = req.params;
@@ -352,5 +352,44 @@ router.get("/submission-activity/:handle", authMiddleware, async (req, res) => {
         res.status(500).json({ error: "Failed to fetch submission activity" });
     }
 });
+
+// Route to fetch recent contest history for a user
+router.get("/contest-history/:handle", authMiddleware, async (req, res) => {
+    try {
+        const { handle } = req.params;
+
+        if (!handle) {
+            return res.status(400).json({ error: "Codeforces handle is required" });
+        }
+
+        // Fetch contest history from Codeforces API
+        const response = await axios.get(`https://codeforces.com/api/user.rating?handle=${handle}`);
+
+        if (response.data.status !== "OK") {
+            return res.status(400).json({ error: "Failed to fetch contest data from Codeforces" });
+        }
+
+        // Extract contest history and sort by most recent
+        const contestHistory = response.data.result
+            .sort((a, b) => b.ratingUpdateTimeSeconds - a.ratingUpdateTimeSeconds)
+            .slice(0, 10)
+            .map(contest => ({
+                contestName: contest.contestName,
+                date: new Date(contest.ratingUpdateTimeSeconds * 1000).toISOString().split('T')[0],
+                rank: contest.rank,
+                ratingChange: contest.newRating - contest.oldRating,
+                newRating: contest.newRating
+            }));
+
+        res.json({ success: true, contests: contestHistory });
+
+    } catch (error) {
+        console.error("Error fetching contest history:", error.message);
+        res.status(500).json({ success: false, error: "Failed to fetch contest history" });
+    }
+});
+
+
+
 
 module.exports = router;

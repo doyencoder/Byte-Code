@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 fetchSubmissionStats(userData.handle);
                 fetchSolvedProblems(userData.handle);
                 fetchSubmissionActivity(userData.handle);
+                fetchRecentContests(userData.handle);
             } else {
                 // Show a message if Codeforces account is not linked
                 document.querySelector('.dashboard-container h1').textContent = 'Link your Codeforces handle to see analytics';
@@ -1342,6 +1343,55 @@ document.addEventListener('DOMContentLoaded', function () {
         if (heatmapContainer) {
             heatmapContainer.innerHTML = '<div class="no-data">No submission activity available</div>';
         }
+    }
+
+    async function fetchRecentContests(handle) {
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/contest-history/${handle}`, {
+                method: "GET",
+                headers: { "Authorization": token }
+            });
+    
+            if (!response.ok) {
+                throw new Error("Failed to fetch contest history");
+            }
+    
+            const data = await response.json();
+    
+            if (data.success && data.contests.length > 0) {
+                renderRecentContests(data.contests);
+            } else {
+                updateContestTableWithMessage("No recent contest data available");
+            }
+        } catch (error) {
+            console.error("Error fetching contest history:", error);
+            updateContestTableWithMessage("Failed to load contest history");
+        }
+    }
+
+
+    function renderRecentContests(contests) {
+        const contestsTableBody = document.querySelector('.contests-table tbody');
+        contestsTableBody.innerHTML = '';
+    
+        contests.forEach(contest => {
+            const row = document.createElement('tr');
+            const ratingChangeClass = contest.ratingChange >= 0 ? 'positive' : 'negative';
+            row.innerHTML = `
+                <td>${contest.contestName}</td>
+                <td>${contest.date}</td>
+                <td>${contest.rank}</td>
+                <td class="${ratingChangeClass}">${contest.ratingChange > 0 ? '+' : ''}${contest.ratingChange}</td>
+                <td>${contest.newRating}</td>
+            `;
+
+            contestsTableBody.appendChild(row);
+        });
+    }
+
+    function updateContestTableWithMessage(message) {
+        const contestsTableBody = document.querySelector('.contests-table tbody');
+        contestsTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #777;">${message}</td></tr>`;
     }
 
     // Start by fetching the user profile
