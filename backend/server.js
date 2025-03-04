@@ -8,6 +8,8 @@ const path = require("path");
 const authRoutes = require("./routes/auth");
 const codeforcesRoutes = require("./routes/codeforces"); // Import Codeforces routes
 const profileRoutes = require("./routes/profile"); // Import profile routes
+const friendsRoutes = require("./routes/friends"); // Import Friends Routes
+const comparisonRoutes = require("./routes/comparison"); //Import Friends Comparison Routes
 
 const app = express();
 
@@ -41,6 +43,8 @@ app.use(express.static(rootDir)); // Assuming your HTML files are in a 'public' 
 app.use("/api/auth", authRoutes);
 app.use("/api/codeforces", codeforcesRoutes); // Register Codeforces route
 app.use("/api/profile", profileRoutes); // Register profile route
+app.use("/api/friends", friendsRoutes); //Aff friends route
+app.use("/api/comparison", comparisonRoutes); //friend comparison route
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)

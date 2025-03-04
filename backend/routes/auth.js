@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -81,7 +82,21 @@ router.get(
   }
 );
 
-// Keep your existing routes
+router.get("/user", authMiddleware, async (req, res) => {
+  try {
+      const user = await User.findById(req.user.id).select("codeforcesHandle");
+      if (!user) {
+          return res.status(404).json({ error: "User not found" });
+      }
+      res.json({ codeforcesHandle: user.codeforcesHandle });
+  } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
 // Signup
 router.post("/signup", async (req, res) => {
     const { email, password } = req.body;

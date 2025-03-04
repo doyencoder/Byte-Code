@@ -4,125 +4,219 @@ document.addEventListener('DOMContentLoaded', function() {
     const leaderboardTitle = document.getElementById('leaderboardTitle');
     const leaderboardBody = document.getElementById('leaderboardBody');
 
-    // Simulated friends list (would be fetched from backend)
-    const friends = [
-        { handle: 'tourist', contests: ['CF Round 123', 'CF Round 456'] },
-        { handle: 'jiangly', contests: ['CF Round 123', 'Educational Round 75'] },
-        { handle: 'Benq', contests: ['CF Round 456', 'Educational Round 75'] }
-    ];
-
-    // Simulated contest data (would be fetched from backend)
-    const contestData = {
-        'CF Round 123': {
-            problems: ['A', 'B', 'C', 'D', 'E'],
-            standings: [
-                { 
-                    rank: 1, 
-                    handle: 'tourist', 
-                    score: 5, 
-                    penalty: 100,
-                    problemScores: ['+', '+', '+', '+', '+']
-                },
-                { 
-                    rank: 2, 
-                    handle: 'jiangly', 
-                    score: 4, 
-                    penalty: 200,
-                    problemScores: ['+', '+', '+', '+', '-']
-                }
-            ]
-        },
-        'CF Round 456': {
-            problems: ['A', 'B', 'C', 'D', 'E'],
-            standings: [
-                { 
-                    rank: 1, 
-                    handle: 'Benq', 
-                    score: 5, 
-                    penalty: 150,
-                    problemScores: ['+', '+', '+', '+', '+']
-                }
-            ]
+    // Fetch user's friends list
+    async function fetchFriendsList() {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                alert("You're not logged in. Redirecting to login page.");
+                window.location.href = "login.html";
+                return;
+            }
+    
+            const response = await fetch("http://localhost:5000/api/friends/list", {
+                headers: { "Authorization": token }
+            });
+    
+            if (!response.ok) throw new Error("Failed to fetch friends");
+    
+            const friends = await response.json();
+            
+            friendDropdown.innerHTML = '<option value="">Select a Friend</option>';
+            friends.forEach(friend => {
+                const option = document.createElement('option');
+                option.value = friend.handle;
+                option.textContent = friend.handle;
+                friendDropdown.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Error fetching friends:", error);
+            alert("Failed to load friends.");
         }
-    };
-
-    // Populate friends dropdown
-    friends.forEach(friend => {
-        const option = document.createElement('option');
-        option.value = friend.handle;
-        option.textContent = friend.handle;
-        friendDropdown.appendChild(option);
-    });
-
-    // Friend dropdown change event
+    }
+    
+    // Event listener for friend selection
     friendDropdown.addEventListener('change', function() {
-        // Reset contest dropdown
+        const selectedFriend = this.value;
         contestDropdown.innerHTML = '<option value="">Select a Contest</option>';
         contestDropdown.disabled = true;
+        
+        if (selectedFriend) fetchCommonContests(selectedFriend);
+    });
+    
 
-        const selectedFriend = this.value;
-        if (selectedFriend) {
-            // Find contests for the selected friend
-            const friendContests = friends.find(f => f.handle === selectedFriend).contests;
-            
-            // Populate contest dropdown
-            friendContests.forEach(contest => {
+    async function fetchCommonContests(friendHandle) {
+        try {
+            const token = localStorage.getItem("token");
+            console.log("Fetching common contests for:", friendHandle);
+    
+            const response = await fetch("http://localhost:5000/api/comparison/common-contests", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": token
+                },
+                body: JSON.stringify({ friendHandle }) // Send friend handle
+            });
+    
+            if (!response.ok) throw new Error("Failed to fetch common contests");
+    
+            const contests = await response.json();
+            console.log("Received common contests:", contests);
+    
+            contestDropdown.innerHTML = '<option value="">Select a Contest</option>';
+            contestDropdown.disabled = false;
+    
+            contests.forEach(contest => {
                 const option = document.createElement('option');
-                option.value = contest;
-                option.textContent = contest;
+                option.value = contest.contestId;
+                option.textContent = `Contest ${contest.contestId}`;
                 contestDropdown.appendChild(option);
             });
-
-            contestDropdown.disabled = false;
+        } catch (error) {
+            console.error("Error fetching common contests:", error);
+            alert("Failed to load common contests.");
         }
-    });
-
-    // Contest dropdown change event
+    }
+    
+    // Event listener for contest selection
     contestDropdown.addEventListener('change', function() {
         const selectedContest = this.value;
-        if (selectedContest) {
-            // Update leaderboard title
-            leaderboardTitle.textContent = `${selectedContest} - Standings`;
-
-            // Get contest data
-            const contest = contestData[selectedContest];
-
-            // Dynamically create table header with problem columns
-            const thead = document.querySelector('.leaderboard-table thead tr');
-            
-            // Remove existing problem columns
-            while (thead.children.length > 4) {
-                thead.removeChild(thead.lastChild);
-            }
-
-            // Add problem columns
-            contest.problems.forEach(problem => {
-                const th = document.createElement('th');
-                th.textContent = problem;
-                th.classList.add('problem-cell');
-                thead.appendChild(th);
-            });
-
-            // Populate leaderboard
-            leaderboardBody.innerHTML = contest.standings.map(entry => `
-                <tr>
-                    <td>${entry.rank}</td>
-                    <td>${entry.handle}</td>
-                    <td>${entry.score}</td>
-                    <td>${entry.penalty}</td>
-                    ${entry.problemScores.map(score => `
-                        <td class="${score === '+' ? 'user-score-highlight' : ''}">${score}</td>
-                    `).join('')}
-                </tr>
-            `).join('');
-        }
+        const selectedFriend = friendDropdown.value;
+    
+        if (selectedContest && selectedFriend) fetchContestStandings(selectedContest, selectedFriend);
     });
-});
+    
+    
 
-// Logout functionality (same as before)
-document.addEventListener("DOMContentLoaded", function () {
-    const logoutBtn = document.getElementById("logoutbtn");
-    logoutBtn.addEventListener("click", async function () {
+    // Fetch and display contest standings
+    async function fetchContestStandings(contestId, friendHandle) {
+        try {
+            const token = localStorage.getItem("token");
+            console.log(`Fetching standings for contest ${contestId}...`);
+            
+            // Fetch current user's data
+            const userresponse = await fetch("http://127.0.0.1:5000/api/codeforces/fetch-user", {
+                method: "GET",
+                headers: {
+                    "Authorization": token
+                }
+            });
+    
+            if (!userresponse.ok) {
+                throw new Error("Failed to fetch user data");
+            }
+    
+            const userData = await userresponse.json();
+            const userHandle = userData.handle;
+    
+            // Fetch contest standings
+            const response = await fetch(`http://localhost:5000/api/comparison/contest-standings?contestId=${contestId}&handles=${friendHandle};${userHandle}`, {
+                headers: { "Authorization": token }
+            });
+    
+            if (!response.ok) throw new Error("Failed to fetch contest standings");
+    
+            const data = await response.json();
+            console.log("Contest standings:", data);
+    
+            // Update leaderboard title
+            leaderboardTitle.textContent = `Contest ${contestId} Leaderboard`;
+    
+            // Clear previous leaderboard data
+            leaderboardBody.innerHTML = '';
+    
+            // Determine problem columns dynamically
+            const problems = data.problems;
+            const problemHeaders = document.querySelector('#leaderboardTable thead tr');
+            
+            // Remove existing problem headers (if any)
+            while (problemHeaders.children.length > 4) {
+                problemHeaders.removeChild(problemHeaders.lastChild);
+            }
+    
+            // Add problem headers
+            problems.forEach((problem, index) => {
+                const problemHeader = document.createElement('th');
+                problemHeader.textContent = `Problem ${String.fromCharCode(65 + index)}`;
+                problemHeader.classList.add('problem-cell');
+                problemHeaders.appendChild(problemHeader);
+            });
+    
+            // Process and sort participants
+            const participants = data.rows;
+            participants.sort((a, b) => {
+                // Sort by points (descending), then by penalty (ascending)
+                if (b.points !== a.points) return b.points - a.points;
+                return a.penalty - b.penalty;
+            });
+    
+            // Populate leaderboard
+            participants.forEach((participant, index) => {
+                const row = document.createElement('tr');
+                
+                // Rank cell
+                const rankCell = document.createElement('td');
+                rankCell.textContent = index + 1;
+                row.appendChild(rankCell);
+    
+                // Handle cell
+                const handleCell = document.createElement('td');
+                handleCell.textContent = participant.party.members[0].handle;
+                
+                // Highlight the current user and friend
+                if (participant.party.members[0].handle === userHandle) {
+                    handleCell.classList.add('user-score-highlight');
+                } else if (participant.party.members[0].handle === friendHandle) {
+                    handleCell.classList.add('user-score-highlight');
+                }
+                row.appendChild(handleCell);
+    
+                // Score cell
+                const scoreCell = document.createElement('td');
+                scoreCell.textContent = participant.points.toFixed(2);
+                row.appendChild(scoreCell);
+    
+                // Penalty cell
+                const penaltyCell = document.createElement('td');
+                penaltyCell.textContent = participant.penalty;
+                row.appendChild(penaltyCell);
+    
+                // Problem cells
+                participant.problemResults.forEach(problemResult => {
+                    const problemCell = document.createElement('td');
+                    problemCell.classList.add('problem-cell');
+                    
+                    if (problemResult.points > 0) {
+                        problemCell.textContent = `+${problemResult.points > 0 ? problemResult.rejectedAttemptCount : ''}`;
+                        problemCell.classList.add('solved');
+                    } else if (problemResult.rejectedAttemptCount > 0) {
+                        problemCell.textContent = `-${problemResult.rejectedAttemptCount}`;
+                        problemCell.classList.add('attempted');
+                    }
+                    
+                    row.appendChild(problemCell);
+                });
+    
+                leaderboardBody.appendChild(row);
+            });
+    
+        } catch (error) {
+            console.error("Error fetching contest standings:", error);
+            alert("Failed to load contest standings.");
+        }
+    }
+    
+    
+    
+
+    // Initial load of friends list
+    fetchFriendsList();
+
+    
+
+    // Logout functionality
+    document.getElementById("logoutbtn").addEventListener("click", async function () {
         try {
             const response = await fetch("http://127.0.0.1:5000/api/auth/logout", { method: "POST" });
             if (!response.ok) {

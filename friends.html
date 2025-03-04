@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="static/favicon.ico">
     <title>Friends - CP Arena</title>
-    <link rel="stylesheet" href="static/friend.css">
+    <link rel="stylesheet" href="static/stylefriend.css">
     <link rel="stylesheet" href="static/styleprofile.css">
     <link rel="stylesheet" href="static/style.css">
 </head>
@@ -72,7 +72,35 @@
     <script>
         let friends = [];
 
-        function addFriend() {
+        // Function to fetch friends list from backend
+        async function loadFriends() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                alert("You're not logged in. Redirecting to login page.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:5000/api/friends/list", {
+                    headers: {
+                        "Authorization": token
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch friends");
+                }
+
+                friends = await response.json();
+                renderFriends();
+            } catch (error) {
+                console.error("Error loading friends:", error);
+                alert("Failed to load friends. Please try again.");
+            }
+        }
+
+        async function addFriend() {
             const cfHandleInput = document.getElementById('cfHandleInput');
             const handle = cfHandleInput.value.trim();
 
@@ -81,28 +109,72 @@
                 return;
             }
 
-            // Check if friend already exists
-            if (friends.some(friend => friend.handle === handle)) {
-                alert('This friend is already in your list');
-                return;
-            }
+            const token = localStorage.getItem("token");
+            try {
+                const response = await fetch("http://localhost:5000/api/friends/add", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": token
+                    },
+                    body: JSON.stringify({ handle })
+                });
 
-            // In a real app, you'd validate the handle with Codeforces API
-            friends.push({ handle: handle });
-            renderFriends();
-            cfHandleInput.value = ''; // Clear input
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Failed to add friend");
+                }
+
+                // Reload friends list
+                loadFriends();
+                cfHandleInput.value = ''; // Clear input
+                alert("Friend added successfully!");
+            } catch (error) {
+                console.error("Error adding friend:", error);
+                alert(error.message);
+            }
         }
 
-        function removeFriend(handle) {
-            friends = friends.filter(friend => friend.handle !== handle);
-            renderFriends();
+        async function removeFriend(handle) {
+            const token = localStorage.getItem("token");
+            try {
+                const response = await fetch(`http://localhost:5000/api/friends/remove/${handle}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": token
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Failed to remove friend");
+                }
+
+                // Reload friends list
+                loadFriends();
+                alert("Friend removed successfully!");
+            } catch (error) {
+                console.error("Error removing friend:", error);
+                alert(error.message);
+            }
         }
 
         function renderFriends() {
             const friendsList = document.getElementById('friendsList');
+            
+            if (friends.length === 0) {
+                friendsList.innerHTML = '<p style="text-align: center;">No friends added yet</p>';
+                return;
+            }
+
             friendsList.innerHTML = friends.map(friend => `
                 <div class="friend-item">
-                    <span>${friend.handle}</span>
+                    <div class="friend-info">
+                        <span class="friend-handle">${friend.handle}</span>
+                        <span class="friend-rating">Rating: ${friend.rating || 'N/A'}</span>
+                    </div>
                     <div class="friend-actions">
                         <button onclick="window.location.href='comparison.html?handle=${friend.handle}'">Compare</button>
                         <button onclick="removeFriend('${friend.handle}')">Remove</button>
@@ -111,7 +183,10 @@
             `).join('');
         }
 
-        // Load logout functionality
+        // Load friends when page loads
+        window.onload = loadFriends;
+
+        // Existing logout functionality remains the same
         document.addEventListener("DOMContentLoaded", function () {
             const logoutBtn = document.getElementById("logoutbtn");
             logoutBtn.addEventListener("click", async function () {

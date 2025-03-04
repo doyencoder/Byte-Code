@@ -20,7 +20,17 @@ const UserSchema = new mongoose.Schema({
     //added for Google authentication
     googleId: { type: String, sparse: true },
     picture: { type: String, default: null },
-    isGoogleUser: { type: Boolean, default: false }
+    isGoogleUser: { type: Boolean, default: false },
+    friends: [{ 
+        handle: { 
+            type: String, 
+            required: true 
+        },
+        addedAt: { 
+            type: Date, 
+            default: Date.now 
+        }
+    }]
 });
 
 module.exports = mongoose.model("User", UserSchema);

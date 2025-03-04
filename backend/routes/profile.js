@@ -1,5 +1,3 @@
-// Add this to your profile.js routes file
-
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
