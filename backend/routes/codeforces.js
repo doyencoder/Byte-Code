@@ -352,7 +352,7 @@ router.get("/submission-activity/:handle", authMiddleware, async (req, res) => {
         res.status(500).json({ error: "Failed to fetch submission activity" });
     }
 });
-// Route to fetch weak topics (tags with most wrong submissions)
+// Route to fetch weak topics with weighted scoring and Bayesian smoothing
 router.get("/weak-topics/:handle", authMiddleware, async (req, res) => {
     try {
         const { handle } = req.params;
@@ -372,30 +372,61 @@ router.get("/weak-topics/:handle", authMiddleware, async (req, res) => {
         // Process the submissions to get weak topics
         const submissions = response.data.result;
         
-        // Track wrong submissions for each tag
-        const weakTagCounts = {};
+        // Track submissions for each tag
+        const tagSubmissions = {};
         
         // Process each submission
         submissions.forEach(submission => {
-            // Only count submissions that are not OK (unsuccessful attempts)
-            if (submission.verdict !== "OK") {
-                // Tag each problem with its tags
-                submission.problem.tags.forEach(tag => {
-                    if (!weakTagCounts[tag]) {
-                        weakTagCounts[tag] = 0;
-                    }
-                    weakTagCounts[tag]++;
-                });
-            }
+            // Tag each problem with its tags
+            submission.problem.tags.forEach(tag => {
+                if (!tagSubmissions[tag]) {
+                    tagSubmissions[tag] = {
+                        totalSubmissions: 0,
+                        wrongSubmissions: 0
+                    };
+                }
+                
+                // Increment total submissions for the tag
+                tagSubmissions[tag].totalSubmissions++;
+                
+                // Increment wrong submissions if submission is not OK
+                if (submission.verdict !== "OK") {
+                    tagSubmissions[tag].wrongSubmissions++;
+                }
+            });
         });
         
-        // Convert to array and sort by count (descending)
-        const weakTopics = Object.keys(weakTagCounts)
-            .map(tag => ({
-                tag: tag,
-                count: weakTagCounts[tag]
-            }))
-            .sort((a, b) => b.count - a.count)
+        // Calculate final scores for weak topics
+        const weakTopics = Object.keys(tagSubmissions)
+            .map(tag => {
+                const { totalSubmissions, wrongSubmissions } = tagSubmissions[tag];
+                
+                // Apply minimum submission threshold (ignore tags with fewer than 5 submissions)
+                if (totalSubmissions < 5) {
+                    return null;
+                }
+                
+                // Calculate raw wrong submission percentage
+                const rawWrongPercentage = (wrongSubmissions / totalSubmissions) * 100;
+                
+                // Apply Bayesian Smoothing and Weighted Scoring Formula
+                // Final Score = ((W + 1) / (T + 2)) * log(1 + T)
+                // W = Wrong Submissions
+                // T = Total Submissions
+                const finalScore = ((wrongSubmissions + 1) / (totalSubmissions + 2)) * Math.log(1 + totalSubmissions);
+                
+                return {
+                    tag: tag,
+                    totalSubmissions,
+                    wrongSubmissions,
+                    rawWrongPercentage: Number(rawWrongPercentage.toFixed(2)),
+                    finalScore: Number(finalScore.toFixed(4))
+                };
+            })
+            // Remove tags that didn't meet the submission threshold
+            .filter(topic => topic !== null)
+            // Sort by final score (descending)
+            .sort((a, b) => b.finalScore - a.finalScore)
             // Take top 5 weak topics
             .slice(0, 5);
         

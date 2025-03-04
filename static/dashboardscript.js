@@ -1392,7 +1392,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateWeakTopicsChart(weakTopics) {
         // Prepare data for the chart
         const tags = weakTopics.map(item => item.tag);
-        const counts = weakTopics.map(item => item.count);
+        const finalScores = weakTopics.map(item => item.finalScore);
 
         // Free up existing chart if it exists
         if (window.weakTopicsChart instanceof Chart) {
@@ -1406,8 +1406,8 @@ document.addEventListener('DOMContentLoaded', function () {
             data: {
                 labels: tags,
                 datasets: [{
-                    label: 'Number of Wrong Submissions',
-                    data: counts,
+                    label: 'Weak Topic Score',
+                    data: finalScores,
                     backgroundColor: 'rgba(255, 99, 132, 0.6)',
                     borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 1
@@ -1421,7 +1421,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Wrong Submissions'
+                            text: 'Weighted Weak Topic Score'
                         }
                     },
                     x: {
@@ -1432,6 +1432,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 },
                 plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const item = weakTopics[context.dataIndex];
+                                return [
+                                    `Weighted Score: ${context.parsed.y.toFixed(4)}`,
+                                    `Wrong Submissions: ${item.wrongSubmissions}/${item.totalSubmissions}`,
+                                    `INACCURACY: ${item.rawWrongPercentage}%`
+                                ];
+                            }
+                        }
+                    },
                     legend: {
                         display: false
                     }
@@ -1473,13 +1485,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: "GET",
                 headers: { "Authorization": token }
             });
-    
+
             if (!response.ok) {
                 throw new Error("Failed to fetch contest history");
             }
-    
+
             const data = await response.json();
-    
+
             if (data.success && data.contests.length > 0) {
                 renderRecentContests(data.contests);
             } else {
@@ -1495,7 +1507,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderRecentContests(contests) {
         const contestsTableBody = document.querySelector('.contests-table tbody');
         contestsTableBody.innerHTML = '';
-    
+
         contests.forEach(contest => {
             const row = document.createElement('tr');
             const ratingChangeClass = contest.ratingChange >= 0 ? 'positive' : 'negative';
