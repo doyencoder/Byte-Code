@@ -352,6 +352,62 @@ router.get("/submission-activity/:handle", authMiddleware, async (req, res) => {
         res.status(500).json({ error: "Failed to fetch submission activity" });
     }
 });
+// Route to fetch weak topics (tags with most wrong submissions)
+router.get("/weak-topics/:handle", authMiddleware, async (req, res) => {
+    try {
+        const { handle } = req.params;
+        
+        if (!handle) {
+            return res.status(400).json({ error: "Codeforces handle is required" });
+        }
+        
+        // Fetch user submissions from Codeforces API
+        const response = await axios.get(`https://codeforces.com/api/user.status?handle=${handle}`);
+        
+        // Check if the API response is successful
+        if (response.data.status !== "OK") {
+            return res.status(400).json({ error: "Failed to fetch submission data from Codeforces" });
+        }
+        
+        // Process the submissions to get weak topics
+        const submissions = response.data.result;
+        
+        // Track wrong submissions for each tag
+        const weakTagCounts = {};
+        
+        // Process each submission
+        submissions.forEach(submission => {
+            // Only count submissions that are not OK (unsuccessful attempts)
+            if (submission.verdict !== "OK") {
+                // Tag each problem with its tags
+                submission.problem.tags.forEach(tag => {
+                    if (!weakTagCounts[tag]) {
+                        weakTagCounts[tag] = 0;
+                    }
+                    weakTagCounts[tag]++;
+                });
+            }
+        });
+        
+        // Convert to array and sort by count (descending)
+        const weakTopics = Object.keys(weakTagCounts)
+            .map(tag => ({
+                tag: tag,
+                count: weakTagCounts[tag]
+            }))
+            .sort((a, b) => b.count - a.count)
+            // Take top 5 weak topics
+            .slice(0, 5);
+        
+        res.json({
+            weakTopics: weakTopics
+        });
+        
+    } catch (error) {
+        console.error("Error fetching weak topics:", error.message);
+        res.status(500).json({ error: "Failed to fetch weak topics" });
+    }
+});
 
 // Route to fetch recent contest history for a user
 router.get("/contest-history/:handle", authMiddleware, async (req, res) => {

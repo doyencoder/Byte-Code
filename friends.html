@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="static/favicon.ico">
+    <title>Friends - CP Arena</title>
+    <link rel="stylesheet" href="static/friend.css">
+    <link rel="stylesheet" href="static/styleprofile.css">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="main" id="navbar">
+        <nav>
+            <span><img width="200px" src="images/logo.png" alt=""></span>
+            <div class="separation"></div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="contest.html">Contests</a></li>
+                <li><a href="problem.html">Problems</a></li>
+                <li><a href="profile.html" id="contestnav">Profile</a></li>
+            </ul>
+            <div class="separation"></div>
+            <div class="nav-buttons">
+                <button id="logoutbtn" style="display: flex;">Logout</button>
+            </div>
+            <div class="menu-icon" onclick="toggleMenu()">&#9776;</div>
+        </nav>
+
+        <div class="mobile-menu">
+            <span class="close-btn" onclick="closeMenu()">&#10006;</span>
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="contest.html">Contests</a></li>
+                <li><a href="problem.html">Problems</a></li>
+                <li><a href="profile.html">Profile</a></li>
+            </ul>
+            <div class="nav-buttons2">
+                <button id="logoutbtn" style="display: flex;">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="friends-container">
+        <div class="add-friend-section">
+            <h2 style="text-align: center; margin-bottom: 20px;">Add Friend</h2>
+            <input type="text" id="cfHandleInput" placeholder="Enter Codeforces Handle">
+            <button onclick="addFriend()">Add Friend</button>
+        </div>
+
+        <div class="friends-list">
+            <h2 style="text-align: center; margin-bottom: 20px;">Your Friends</h2>
+            <div id="friendsList">
+                <!-- Friend items will be dynamically added here -->
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="window.location.href='comparisonwithfriend.html'">Comparison With Friends</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let friends = [];
+
+        function addFriend() {
+            const cfHandleInput = document.getElementById('cfHandleInput');
+            const handle = cfHandleInput.value.trim();
+
+            if (!handle) {
+                alert('Please enter a Codeforces handle');
+                return;
+            }
+
+            // Check if friend already exists
+            if (friends.some(friend => friend.handle === handle)) {
+                alert('This friend is already in your list');
+                return;
+            }
+
+            // In a real app, you'd validate the handle with Codeforces API
+            friends.push({ handle: handle });
+            renderFriends();
+            cfHandleInput.value = ''; // Clear input
+        }
+
+        function removeFriend(handle) {
+            friends = friends.filter(friend => friend.handle !== handle);
+            renderFriends();
+        }
+
+        function renderFriends() {
+            const friendsList = document.getElementById('friendsList');
+            friendsList.innerHTML = friends.map(friend => `
+                <div class="friend-item">
+                    <span>${friend.handle}</span>
+                    <div class="friend-actions">
+                        <button onclick="window.location.href='comparison.html?handle=${friend.handle}'">Compare</button>
+                        <button onclick="removeFriend('${friend.handle}')">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load logout functionality
+        document.addEventListener("DOMContentLoaded", function () {
+            const logoutBtn = document.getElementById("logoutbtn");
+            logoutBtn.addEventListener("click", async function () {
+                try {
+                    const response = await fetch("http://127.0.0.1:5000/api/auth/logout", { method: "POST" });
+                    if (!response.ok) {
+                        throw new Error("Failed to logout");
+                    }
+                    localStorage.removeItem("token");
+                    alert("You have been logged out!");
+                    window.location.href = "base.html";
+                } catch (error) {
+                    console.error("Logout failed", error);
+                    alert("Error logging out. Please try again.");
+                }
+            });
+        });
+    </script>
+    <script src="static/script.js"></script>
+</body>
+</html>

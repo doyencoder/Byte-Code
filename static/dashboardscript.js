@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 fetchSubmissionStats(userData.handle);
                 fetchSolvedProblems(userData.handle);
                 fetchSubmissionActivity(userData.handle);
+                fetchWeakTopics(userData.handle);
                 fetchRecentContests(userData.handle);
             } else {
                 // Show a message if Codeforces account is not linked
@@ -46,11 +47,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Initialize empty charts as we have no data
                 initializeEmptyCharts();
+                initializeEmptyWeakTopicsChart();
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
             alert("Failed to load user data. Please try again later.");
             initializeEmptyCharts();
+            initializeEmptyWeakTopicsChart();
         }
     }
 
@@ -111,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
     async function fetchSolvedProblems(handle) {
         try {
             console.log("Fetching solved probledems for handle:", handle);
-            
+
             // Get problems solved from our backend API
             const response = await fetch(`http://127.0.0.1:5000/api/codeforces/solved-problems/${handle}`, {
                 method: "GET",
@@ -131,11 +134,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Update the UI with the number of solved problems
             updateSolvedProblemsCount(solvedProblems);
-            
-            
+
+
         } catch (error) {
             console.error("Error fetching solved problems:", error);
-            
+
             // Set problems solved to "N/A" in case of error
             document.querySelector('.stats-overview .stat-card:nth-child(3) .stat-value').textContent = "N/A";
         }
@@ -145,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateSolvedProblemsCount(solvedProblems) {
         // Get the solved problems count from the array length
         const problemsCount = solvedProblems.length;
-        
+
         // Update the UI element with the count
         const solvedElement = document.querySelector('.stats-overview .stat-card:nth-child(3) .stat-value');
         solvedElement.textContent = problemsCount;
@@ -526,10 +529,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         });
-
-        // Update the chart title to include total problems solved
-        const chartTitle = document.querySelector('.chart-container:nth-child(3) h2');
-        chartTitle.textContent = `Problem Tags Distribution (${tagsData.totalSolvedProblems} Problems Solved)`;
     }
 
     // Function to generate random colors for tags
@@ -1345,6 +1344,129 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Function to fetch and render weak topics
+    async function fetchWeakTopics(handle) {
+        try {
+            // Show loading state
+            const chartContainer = document.querySelector('.chart-container:nth-child(3)');
+            chartContainer.innerHTML = '<h2>Weak Topics</h2><div class="loading">Loading weak topics...</div>';
+            chartContainer.innerHTML += '<canvas id="weakTopicsChart"></canvas>';
+
+            // Fetch weak topics from our backend API
+            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/weak-topics/${handle}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": token
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch weak topics");
+            }
+
+            const data = await response.json();
+
+            // Remove loading message
+            const loadingElement = document.querySelector('.loading');
+            if (loadingElement) loadingElement.remove();
+
+            // If we have data, update the chart
+            if (data.weakTopics && data.weakTopics.length > 0) {
+                updateWeakTopicsChart(data.weakTopics);
+            } else {
+                // No weak topics found
+                chartContainer.querySelector('h2').textContent = 'Weak Topics (No data found)';
+                initializeEmptyWeakTopicsChart();
+            }
+        } catch (error) {
+            console.error("Error fetching weak topics:", error);
+            // Show error in chart container
+            const chartContainer = document.querySelector('.chart-container:nth-child(3)');
+            chartContainer.innerHTML = '<h2>Weak Topics</h2><div class="error">Failed to load weak topics</div>';
+            chartContainer.innerHTML += '<canvas id="weakTopicsChart"></canvas>';
+            initializeEmptyWeakTopicsChart();
+        }
+    }
+
+    // Function to update weak topics chart
+    function updateWeakTopicsChart(weakTopics) {
+        // Prepare data for the chart
+        const tags = weakTopics.map(item => item.tag);
+        const counts = weakTopics.map(item => item.count);
+
+        // Free up existing chart if it exists
+        if (window.weakTopicsChart instanceof Chart) {
+            window.weakTopicsChart.destroy();
+        }
+
+        // Create a new chart
+        const ctx = document.getElementById('weakTopicsChart').getContext('2d');
+        window.weakTopicsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: tags,
+                datasets: [{
+                    label: 'Number of Wrong Submissions',
+                    data: counts,
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Wrong Submissions'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tags'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    // Function to initialize an empty weak topics chart
+    function initializeEmptyWeakTopicsChart() {
+        // Free up existing chart if it exists
+        if (window.weakTopicsChart instanceof Chart) {
+            window.weakTopicsChart.destroy();
+        }
+
+        // Create an empty chart
+        const ctx = document.getElementById('weakTopicsChart').getContext('2d');
+        window.weakTopicsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'No Data',
+                    data: [],
+                    backgroundColor: 'rgba(200, 200, 200, 0.6)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+
     async function fetchRecentContests(handle) {
         try {
             const response = await fetch(`http://127.0.0.1:5000/api/codeforces/contest-history/${handle}`, {
@@ -1396,5 +1518,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Start by fetching the user profile
     fetchUserProfile();
-    
+
 });

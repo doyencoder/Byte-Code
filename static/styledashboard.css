@@ -75,7 +75,9 @@
     margin-bottom: 15px;
     text-align: center;
 }
-
+.dashboard-container > .chart-section:nth-child(3) .chart-container:first-child {
+    grid-column: 1 / span 2;
+}
 canvas {
     width: 100% !important;
     height: 300px !important;

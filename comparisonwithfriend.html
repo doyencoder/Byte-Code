@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="static/favicon.ico">
+    <title>Friend Comparison - CP Arena</title>
+    <link rel="stylesheet" href="static/comparisonwithfriend.css">
+    <link rel="stylesheet" href="static/styleprofile.css">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="main" id="navbar">
+        <nav>
+            <span><img width="200px" src="images/logo.png" alt=""></span>
+            <div class="separation"></div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="contest.html">Contests</a></li>
+                <li><a href="problem.html">Problems</a></li>
+                <li><a href="profile.html" id="contestnav">Profile</a></li>
+            </ul>
+            <div class="separation"></div>
+            <div class="nav-buttons">
+                <button id="logoutbtn" style="display: flex;">Logout</button>
+            </div>
+            <div class="menu-icon" onclick="toggleMenu()">&#9776;</div>
+        </nav>
+
+        <div class="mobile-menu">
+            <span class="close-btn" onclick="closeMenu()">&#10006;</span>
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="contest.html">Contests</a></li>
+                <li><a href="problem.html">Problems</a></li>
+                <li><a href="profile.html">Profile</a></li>
+            </ul>
+            <div class="nav-buttons2">
+                <button id="logoutbtn" style="display: flex;">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="comparison-container">
+        <div class="selection-area">
+            <div class="dropdown-container">
+                <select id="friendDropdown">
+                    <option value="">Select a Friend</option>
+                    <!-- Friends will be dynamically populated -->
+                </select>
+            </div>
+            <div class="dropdown-container">
+                <select id="contestDropdown" disabled>
+                    <option value="">Select a Contest</option>
+                    <!-- Contests will be dynamically populated -->
+                </select>
+            </div>
+        </div>
+
+        <div class="detailed-leaderboard">
+            <h2 id="leaderboardTitle" style="text-align: center; margin-bottom: 20px;">
+                Contest Leaderboard
+            </h2>
+            <table class="leaderboard-table" id="leaderboardTable">
+                <thead>
+                    <tr>
+                        <th class="rank-cell">Rank</th>
+                        <th>Handle</th>
+                        <th class="score-cell">Score</th>
+                        <th class="penalty-cell">Penalty</th>
+                        <!-- Problem columns will be dynamically added -->
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody">
+                    <!-- Leaderboard rows will be dynamically added -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="static/comparisonwithfriendscript.js"></script>
+    <script src="static/script.js"></script>
+</body>
+</html>
