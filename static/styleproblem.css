@@ -195,6 +195,15 @@ select {
     font-weight: 500;
     color: #007bff;
 }
+.problem-mode-toggle{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    padding-top: 20px;
+
+}
+
 
 /* Responsive adjustments */
 @media (max-width: 992px) {

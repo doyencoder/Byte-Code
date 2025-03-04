@@ -7,6 +7,27 @@ let currentPage = 1;
 const problemsPerPage = 15;
 let userSolvedProblems = new Set();
 
+function toggleView(section) {
+    const allProblems = document.getElementById("allProblemsSection");
+    const weakTopics = document.getElementById("weakTopicsSection");
+    const allBtn = document.getElementById("allProblemsBtn");
+    const weakBtn = document.getElementById("weakTopicsBtn");
+
+    if (section === "all") {
+        allProblems.style.display = "block";
+        weakTopics.style.display = "none";
+        allBtn.classList.add("active");
+        weakBtn.classList.remove("active");
+    } else {
+        allProblems.style.display = "none";
+        weakTopics.style.display = "block";
+        allBtn.classList.remove("active");
+        weakBtn.classList.add("active");
+    }
+}
+
+
+
 // Function to fetch problems from backend
 async function fetchProblems() {
     document.getElementById("loading").style.display = "block";
