@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 fetchProblemTags(userData.handle); // Add this line to fetch problem tags
                 fetchProblemStats(userData.handle);
                 fetchSubmissionStats(userData.handle);
+                fetchSolvedProblems(userData.handle);
                 fetchSubmissionActivity(userData.handle);
             } else {
                 // Show a message if Codeforces account is not linked
@@ -104,6 +105,51 @@ document.addEventListener('DOMContentLoaded', function () {
         if (rank.includes("legendary grandmaster")) return "#AA0000";
         return "#000000";
     }
+
+    //function for fetching Solved problems from API
+    async function fetchSolvedProblems(handle) {
+        try {
+            console.log("Fetching solved probledems for handle:", handle);
+            
+            // Get problems solved from our backend API
+            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/solved-problems/${handle}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": token
+                }
+            });
+
+            console.log("AsdhfvwgeahfvhPI response status:", response.status);
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch solved problems");
+            }
+
+            const solvedProblems = await response.json();
+            console.log("Solved problems data received:", solvedProblems);
+
+            // Update the UI with the number of solved problems
+            updateSolvedProblemsCount(solvedProblems);
+            
+            
+        } catch (error) {
+            console.error("Error fetching solved problems:", error);
+            
+            // Set problems solved to "N/A" in case of error
+            document.querySelector('.stats-overview .stat-card:nth-child(3) .stat-value').textContent = "N/A";
+        }
+    }
+
+    // Function to update the solved problems count in the UI
+    function updateSolvedProblemsCount(solvedProblems) {
+        // Get the solved problems count from the array length
+        const problemsCount = solvedProblems.length;
+        
+        // Update the UI element with the count
+        const solvedElement = document.querySelector('.stats-overview .stat-card:nth-child(3) .stat-value');
+        solvedElement.textContent = problemsCount;
+    }
+
 
     // Function to fetch rating history from Codeforces API
     async function fetchRatingHistory(handle) {
@@ -1300,4 +1346,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Start by fetching the user profile
     fetchUserProfile();
+    
 });
