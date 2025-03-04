@@ -44,6 +44,48 @@
             margin-bottom: 20px;
         }
 
+        #contestnav2 {
+            text-decoration: underline;
+            text-underline-offset: 5px;
+            background-color: hsl(224, 100%, 94%);
+        }
+
+        .edit {
+            padding-top: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: auto;
+        }
+
+        .edit-links {
+            list-style: none;
+            display: flex;
+            justify-content: flex-start;
+            /* Align to left */
+            gap: 20px;
+            /* Add spacing between items */
+            padding: 0;
+            margin: 0;
+        }
+
+        .edit-links li {
+            display: inline;
+        }
+
+        .edit-links a {
+            text-decoration: none;
+            color: #16295d;
+            font-weight: 500;
+            padding: 8px 20px;
+            border-radius: 5px;
+            transition: background-color 0.25s ease-in-out;
+        }
+
+        .edit-links a:hover {
+            background-color: hsl(224, 100%, 94%);
+        }
+
         .button-group {
             display: flex;
             justify-content: center;
@@ -110,13 +152,22 @@
         </div>
     </div>
 
+    <div class="edit">
+        <ul class="edit-links"> <!-- Added class here -->
+            <li><a href="profile.html">Profile</a></li>
+            <li><a href="My_Contest.html">My Contest</a></li>
+            <li><a href="friends.html">Friends</a></li>
+            <li><a href="connect-codeforces.html" id="contestnav2">Connect Codeforces</a></li>
+            <li><a href="edit-profile.html">Edit Profile</a></li> <!-- Fixed text casing -->
+        </ul>
+    </div>
+
     <div class="zero">
         <div class="cf-container">
             <input type="text" id="cf-input" placeholder="Enter your CF Handle">
 
             <div class="button-group">
                 <button onclick="saveAndFetchCFData()">Submit Request</button>
-                <button onclick="window.location.href='profile.html'">View Profile</button>
             </div>
             <!-- Div to display fetched Codeforces data -->
             <div id="cf-data" style="margin-top: 20px;"></div>

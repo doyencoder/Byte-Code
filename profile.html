@@ -42,34 +42,44 @@
         </div>
     </div>
 
+    <div class="edit">
+        <ul class="edit-links"> <!-- Added class here -->
+            <li><a href="profile.html" id="contestnav2">Profile</a></li>
+            <li><a href="My_Contest.html">My Contest</a></li>
+            <li><a href="friends.html">Friends</a></li>
+            <li><a href="connect-codeforces.html">Connect Codeforces</a></li>
+            <li><a href="edit-profile.html">Edit Profile</a></li> <!-- Fixed text casing -->
+        </ul>
+    </div>
+    <div class="line">
+
+    </div>
+
     <div class="profile-container">
         <div class="profile">
-            <div class="userbox">
-                <div class="profile-pic" id="profile-initials"></div>
-                <h2 id="user-name">User Name</h2>
-                <p id="user-email">user@example.com</p>
-            </div>
+            <div class="profilebox">
+                <div class="userbox">
+                    <div class="profile-pic" id="profile-initials"></div>
+                    <h2 id="user-name">User Name</h2>
+                    <p id="user-email">user@example.com</p>
+                </div>
 
-            <div class="zero">
-                <div class="info-box">
-                    <label>Institution</label>
-                    <p id="institution">--</p>
-                </div>
-                <div class="info-box">
-                    <label>Country</label>
-                    <p id="country">--</p>
-                </div>
-                <div class="info-box">
-                    <label>Codeforces Handle</label>
-                    <p id="cf-handle">Loading...</p>
+                <div class="zero">
+                    <div class="info-box">
+                        <label>Institution</label>
+                        <p id="institution">--</p>
+                    </div>
+                    <div class="info-box">
+                        <label>Country</label>
+                        <p id="country">--</p>
+                    </div>
+                    <div class="info-box">
+                        <label>Codeforces Handle</label>
+                        <p id="cf-handle">Loading...</p>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="edit">
-            <button onclick="window.location.href='edit-profile.html'">Edit Profile</button>
-            <button onclick="window.location.href='connect-codeforces.html'">Connect Codeforces</button>
-            <button onclick="window.location.href='friends.html'">Friends</button>
+            <div id="cf-stats-container"></div>
         </div>
     </div>
 
@@ -105,7 +115,7 @@
                 // document.getElementById("cf-handle").textContent = data.handle || "Not linked";
 
                 if (data.rating !== "N/A") {
-                    const cfStatsContainer = document.createElement("div");
+                    const cfStatsContainer = document.getElementById("cf-stats-container");
                     cfStatsContainer.className = "cf-stats";
                     cfStatsContainer.innerHTML = `
                         <h3>Codeforces Stats</h3>
@@ -128,7 +138,7 @@
                             </div>
                         </div>
                     `;
-                    
+
                     // Add after profile-container if it doesn't exist yet
                     if (!document.querySelector(".cf-stats")) {
                         document.querySelector(".profile-container").appendChild(cfStatsContainer);
@@ -151,4 +161,5 @@
     <script src="static/script.js"></script>
 
 </body>
+
 </html>
