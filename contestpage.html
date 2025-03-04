@@ -69,59 +69,8 @@
 
         </div>
     </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // localStorage se contest ka data fetch karo
-            let contestData = JSON.parse(localStorage.getItem("contestData")) || [];
-
-            let problemsList = document.getElementById("problems-list");
-
-            function loadProblems() {
-                problemsList.innerHTML = "";
-                contestData.forEach((q, index) => {
-                    let row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td><a href="#">Problem ${index + 1}</a></td>
-                        <td style="background-color: ${getColor(q.difficulty)}">${q.difficulty}</td>
-                        <td style="background-color: lightpink">Pending</td>
-                    `;
-                    problemsList.appendChild(row);
-                });
-            }
-
-            function getColor(rating) {
-                if (rating < 1200) return "rgb(204, 204, 204)";
-                if (rating < 1400) return "rgb(119, 255, 119)";
-                if (rating < 1600) return "rgb(119, 221, 187)";
-                if (rating < 1900) return "rgb(170, 170, 255)"
-                return "violet";
-            }
-
-            loadProblems();
-
-            // Timer Logic (2 Hours Countdown)
-            let timeLeft = 7200;
-            function updateTimer() {
-                let hours = Math.floor(timeLeft / 3600);
-                let minutes = Math.floor((timeLeft % 3600) / 60);
-                let seconds = timeLeft % 60;
-                document.getElementById("timer").textContent =
-                    `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-                if (timeLeft > 0) {
-                    timeLeft--;
-                    setTimeout(updateTimer, 1000);
-                }
-            }
-            updateTimer();
-
-            // Refresh Button
-            document.getElementById("refresh-btn").addEventListener("click", loadProblems);
-        });
-
-    </script>
     <script src="static/script.js"></script>
+    <script src="static/contestpagescript.js"></script>
 
 </body>
 
