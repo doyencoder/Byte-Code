@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const passport = require("passport");
 const session = require("express-session");
 const path = require("path");
-
 const authRoutes = require("./routes/auth");
 const codeforcesRoutes = require("./routes/codeforces"); // Import Codeforces routes
 const profileRoutes = require("./routes/profile"); // Import profile routes

@@ -4,9 +4,14 @@ const router = express.Router();
 const User = require("../models/User");
 const { linkCodeforces } = require("../controllers/codeforcesController");
 const authMiddleware = require("../middleware/authMiddleware");
-
+const { getProblems, getUserSolved, updateCodeforcesHandle } = require('../controllers/codeforcesController');
 // Route for linking Codeforces handle (now protected with middleware)
 router.post("/link", authMiddleware, linkCodeforces);
+router.get('/problems', getProblems);
+
+// Protected routes
+router.get('/user/solved-problems', getUserSolved);
+router.post('/user/update-handle', authMiddleware, updateCodeforcesHandle);
 
 // Fetch and update Codeforces user details
 router.get("/user/:handle", authMiddleware, async (req, res) => {
