@@ -282,4 +282,70 @@ router.get("/submission-verdicts/:handle", authMiddleware, async (req, res) => {
     }
 });
 
+// Route to fetch submission activity data for heatmap
+router.get("/submission-activity/:handle", authMiddleware, async (req, res) => {
+    try {
+        const { handle } = req.params;
+        
+        if (!handle) {
+            return res.status(400).json({ error: "Codeforces handle is required" });
+        }
+        
+        // Fetch user's submissions from Codeforces API
+        const response = await axios.get(`https://codeforces.com/api/user.status?handle=${handle}`);
+        
+        // Check if the API response is successful
+        if (response.data.status !== "OK") {
+            return res.status(400).json({ error: "Failed to fetch submissions data from Codeforces" });
+        }
+        
+        // Extract the submissions from the response
+        const submissions = response.data.result;
+        
+        // Process submissions to get activity by date
+        const activityByDate = {};
+        
+        // Get current date and calculate date 1 year ago
+        const currentDate = new Date();
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(currentDate.getFullYear() - 1);
+        
+        // Initialize all dates in the past year with 0 submissions
+        for (let d = new Date(oneYearAgo); d <= currentDate; d.setDate(d.getDate() + 1)) {
+            const dateKey = d.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            activityByDate[dateKey] = 0;
+        }
+        
+        // Count submissions for each date
+        submissions.forEach(submission => {
+            const submissionDate = new Date(submission.creationTimeSeconds * 1000);
+            // Only count submissions from the last year
+            if (submissionDate >= oneYearAgo) {
+                const dateKey = submissionDate.toISOString().split('T')[0];
+                if (activityByDate[dateKey] !== undefined) {
+                    activityByDate[dateKey]++;
+                }
+            }
+        });
+        
+        // Convert to array format for the frontend
+        const activityData = Object.keys(activityByDate).map(date => ({
+            date: date,
+            count: activityByDate[date]
+        }));
+        
+        // Sort by date
+        activityData.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        res.json({
+            totalSubmissions: submissions.length,
+            activity: activityData
+        });
+        
+    } catch (error) {
+        console.error("Error fetching submission activity:", error.message);
+        res.status(500).json({ error: "Failed to fetch submission activity" });
+    }
+});
+
 module.exports = router;

@@ -81,12 +81,12 @@ canvas {
     height: 300px !important;
 }
 
-/* Activity Heatmap */
+/* Activity Heatmap - Improved Styles */
 .activity-section {
     margin-bottom: 30px;
 }
 
-.activity-section h2 {
+.activity-heatmap h2 {
     color: #16295d;
     font-size: 20px;
     margin-bottom: 15px;
@@ -98,21 +98,122 @@ canvas {
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
 }
 
-.heatmap-container {
+/* Calendar Grid - Main Container */
+.calendar-grid {
+    /* display: grid;
+    grid-template-columns: 50px 1fr; Fixed width for day labels */
+    display: flex;
+    gap: 10px;
+    align-items: start;
+    flex-wrap: wrap;
+}
+
+/* Month Labels - Fix alignment */
+.month-labels {
+    /* display: grid;
+    grid-template-columns: repeat(12, 1fr); */
+    display: flex;
+    width: 100%;
+    padding-left: 50px;
+    margin-bottom: 10px;
+    height: 20px;
+    justify-content: space-evenly;
+}
+
+.month-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+}
+
+/* Day Labels - Improve spacing and alignment */
+.day-labels {
     display: grid;
-    grid-template-columns: repeat(53, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 6px;
+    text-align: right;
+    padding-right: 10px;
+}
+
+.day-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    height: 15px;
+    line-height: 15px;
+}
+
+/* Cells Grid - Improve layout */
+.cells-grid {
+    display: grid;
     grid-template-rows: repeat(7, 1fr);
     gap: 3px;
-    height: 140px;
+    width: 93%;
+    height: 140px; /* Fixed height based on 7 rows with 15px cells + gaps */
 }
 
+/* Heatmap Cell - Consistent sizing */
 .heatmap-cell {
-    border-radius: 2px;
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
     background-color: #ebedf0;
+    transition: background-color 0.3s ease;
 }
 
+/* Heatmap Legend - Better organization */
+.heatmap-legend {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 12px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 0 5px;
+}
+
+.color-box {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    border-radius: 2px;
+}
+
+.legend-item span {
+    font-size: 12px;
+    color: #555;
+}
+
+.heatmap-legend > span:first-child {
+    margin-right: 5px;
+    font-weight: 600;
+}
+
+/* Fixed color levels for consistent display */
+.heatmap-cell[data-level="0"] { background-color: #ebedf0; }
+.heatmap-cell[data-level="1"] { background-color: #c6e48b; }
+.heatmap-cell[data-level="2"] { background-color: #7bc96f; }
+.heatmap-cell[data-level="3"] { background-color: #239a3b; }
+.heatmap-cell[data-level="4"] { background-color: #196127; }
+
+/* Loading and Error States */
+.loading, .error, .no-data {
+    padding: 20px;
+    text-align: center;
+    color: #555;
+}
+
+.error {
+    color: #dc3545;
+}
 /* Tags Performance Table */
 .tags-performance {
     margin-bottom: 30px;
@@ -218,6 +319,27 @@ canvas {
     .contests-table th, .contests-table td {
         padding: 8px 6px;
         font-size: 14px;
+    }
+    .calendar-grid {
+        grid-template-columns: 40px 1fr;
+        gap: 5px;
+    }
+    
+    .day-label {
+        font-size: 10px;
+    }
+    
+    .heatmap-cell {
+        width: 12px;
+        height: 12px;
+    }
+    
+    .cells-grid {
+        height: 120px;
+    }
+    
+    .month-label {
+        font-size: 10px;
     }
 }
 canvas#tagsChart {

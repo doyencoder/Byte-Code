@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 fetchProblemTags(userData.handle); // Add this line to fetch problem tags
                 fetchProblemStats(userData.handle);
                 fetchSubmissionStats(userData.handle);
+                fetchSubmissionActivity(userData.handle);
             } else {
                 // Show a message if Codeforces account is not linked
                 document.querySelector('.dashboard-container h1').textContent = 'Link your Codeforces handle to see analytics';
@@ -1076,6 +1077,225 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         });
+    }
+
+    // First, let's add these new functions to fetch submission activity data and display the heatmap
+
+    // Function to fetch submission activity for heatmap
+    async function fetchSubmissionActivity(handle) {
+        try {
+            // Show loading state
+            const heatmapContainer = document.getElementById('activityHeatmap');
+            if (heatmapContainer) {
+                console.log("Heatmap container found!");
+            } else {
+                console.error("Heatmap container not found!");
+            }
+            heatmapContainer.innerHTML = '<div class="loading">Loading submission activity...</div>';
+
+            // Get submission activity from our backend API
+            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/submission-activity/${handle}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": token
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch submission activity");
+            }
+
+            const activityData = await response.json();
+
+            // Remove loading message
+            const loadingElement = heatmapContainer.querySelector('.loading');
+            if (loadingElement) loadingElement.remove();
+
+            // If we have data, create the heatmap
+            if (activityData && activityData.activity && activityData.activity.length > 0) {
+                renderSubmissionHeatmap(activityData.activity);
+            } else {
+                // No submission history
+                heatmapContainer.innerHTML = '<div class="no-data">No submission activity found</div>';
+            }
+        } catch (error) {
+            console.error("Error fetching submission activity:", error);
+            // Show error in heatmap container
+            const heatmapContainer = document.getElementById('activityHeatmap');
+            heatmapContainer.innerHTML = '<div class="error">Failed to load submission activity</div>';
+        }
+    }
+
+    // Function to render the submission heatmap
+    function renderSubmissionHeatmap(activityData) {
+        const heatmapContainer = document.getElementById('activityHeatmap');
+        heatmapContainer.innerHTML = ''; // Clear container
+
+        // Get the dates and counts from the activity data
+        const dates = activityData.map(item => new Date(item.date));
+
+        // Find the min and max date in the data
+        const minDate = new Date(Math.min(...dates));
+        const maxDate = new Date(Math.max(...dates));
+
+        // Create a map of date to count for quick lookup
+        const dateCountMap = {};
+        activityData.forEach(item => {
+            dateCountMap[item.date] = item.count;
+        });
+
+        // Calculate the number of weeks to display (rounded up)
+        const weeksDiff = Math.ceil((maxDate - minDate) / (7 * 24 * 60 * 60 * 1000)) + 1;
+
+        // Create the calendar grid
+        const calendarGrid = document.createElement('div');
+        calendarGrid.className = 'calendar-grid';
+
+        // Add month labels
+        const monthLabelsRow = document.createElement('div');
+        monthLabelsRow.className = 'month-labels';
+
+        // Generate all dates between min and max date
+        const allDates = [];
+        let currentDate = new Date(minDate);
+        while (currentDate <= maxDate) {
+            allDates.push(new Date(currentDate));
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        // Group dates by month for labels
+        const months = [];
+        let currentMonth = -1;
+
+        allDates.forEach(date => {
+            if (date.getMonth() !== currentMonth) {
+                currentMonth = date.getMonth();
+                months.push({
+                    name: date.toLocaleString('default', { month: 'short' }),
+                    startIndex: Math.floor((date - minDate) / (24 * 60 * 60 * 1000) / 7)
+                });
+            }
+        });
+
+        // Create month labels
+        months.forEach(month => {
+            const monthLabel = document.createElement('div');
+            monthLabel.className = 'month-label';
+            monthLabel.textContent = month.name;
+            monthLabel.style.gridColumnStart = month.startIndex + 1; // +1 for the day labels column
+            monthLabelsRow.appendChild(monthLabel);
+        });
+
+        calendarGrid.appendChild(monthLabelsRow);
+
+        // Add day of week labels
+        const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const dayLabelsColumn = document.createElement('div');
+        dayLabelsColumn.className = 'day-labels';
+
+        daysOfWeek.forEach(day => {
+            const dayLabel = document.createElement('div');
+            dayLabel.className = 'day-label';
+            dayLabel.textContent = day;
+            dayLabelsColumn.appendChild(dayLabel);
+        });
+
+        calendarGrid.appendChild(dayLabelsColumn);
+
+        // Create the cells grid
+        const cellsGrid = document.createElement('div');
+        cellsGrid.className = 'cells-grid';
+        cellsGrid.style.gridTemplateColumns = `repeat(${weeksDiff}, 1fr)`;
+
+        // Fill in the grid with cells
+        for (let i = 0; i < 7; i++) { // 7 days in a week
+            for (let j = 0; j < weeksDiff; j++) {
+                // Calculate the date for this cell
+                const cellDate = new Date(minDate);
+                cellDate.setDate(minDate.getDate() + (j * 7) + i - minDate.getDay());
+
+                const dateStr = cellDate.toISOString().split('T')[0];
+                const count = dateCountMap[dateStr] || 0;
+
+                const cell = document.createElement('div');
+                cell.className = 'heatmap-cell';
+                cell.dataset.date = dateStr;
+                cell.dataset.count = count;
+
+                // Determine color intensity based on count
+                const intensity = getColorIntensity(count);
+                cell.style.backgroundColor = intensity;
+
+                // Add tooltip
+                cell.title = `${dateStr}: ${count} submissions`;
+
+                cellsGrid.appendChild(cell);
+            }
+        }
+
+        calendarGrid.appendChild(cellsGrid);
+        heatmapContainer.appendChild(calendarGrid);
+
+        // Add a color legend
+        addHeatmapLegend(heatmapContainer);
+    }
+
+    // Function to determine color intensity based on submission count
+    function getColorIntensity(count) {
+        if (count === 0) return '#ebedf0';
+        if (count < 3) return '#c6e48b';
+        if (count < 6) return '#7bc96f';
+        if (count < 9) return '#239a3b';
+        return '#196127';
+    }
+
+    // Function to add a color legend to the heatmap
+    function addHeatmapLegend(container) {
+        const legend = document.createElement('div');
+        legend.className = 'heatmap-legend';
+
+        const legendTitle = document.createElement('span');
+        legendTitle.textContent = 'Submissions:';
+        legend.appendChild(legendTitle);
+
+        const colorLevels = [
+            { color: '#ebedf0', label: '0' },
+            { color: '#c6e48b', label: '1-2' },
+            { color: '#7bc96f', label: '3-5' },
+            { color: '#239a3b', label: '6-8' },
+            { color: '#196127', label: '9+' }
+        ];
+
+        colorLevels.forEach(level => {
+            const item = document.createElement('div');
+            item.className = 'legend-item';
+
+            const colorBox = document.createElement('div');
+            colorBox.className = 'color-box';
+            colorBox.style.backgroundColor = level.color;
+
+            const label = document.createElement('span');
+            label.textContent = level.label;
+
+            item.appendChild(colorBox);
+            item.appendChild(label);
+            legend.appendChild(item);
+        });
+
+        container.appendChild(legend);
+    }
+
+    // Function to initialize empty charts
+    function initializeEmptyCharts() {
+        initializeEmptyRatingChart();
+
+        // Add initialization for other charts here
+
+        // Initialize empty heatmap
+        const heatmapContainer = document.getElementById('activityHeatmap');
+        if (heatmapContainer) {
+            heatmapContainer.innerHTML = '<div class="no-data">No submission activity available</div>';
+        }
     }
 
     // Start by fetching the user profile
