@@ -1,3 +1,120 @@
+async function createRatingChart() {
+    try {
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            console.error('No token found');
+            return;
+        }
+
+        const response = await fetch('http://localhost:5000/api/contest/ratings', {
+            method: 'GET',
+            headers: {
+                'Authorization': token,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch contest ratings');
+        }
+
+        const ratingData = await response.json();
+
+        // If no rating data, hide the chart and show a message
+        if (ratingData.length === 0) {
+            const chartContainer = document.getElementById('chartContainer');
+            if (chartContainer) {
+                chartContainer.innerHTML = `
+                    <p style="color: gray; text-align: center; padding: 20px;">
+                        No contest history available. Participate in contests to track your rating.
+                    </p>
+                `;
+            }
+            return;
+        }
+
+        // Ensure the first point is always 100 by adding an initial point
+        const fullRatingData = [
+            { 
+                date: ratingData[0].date, 
+                rating: 100 
+            },
+            ...ratingData
+        ];
+
+        // Modify labels to match full rating data
+        const labels = fullRatingData.map(data => new Date(data.date).toLocaleDateString('en-GB'));
+
+        // Create Chart.js chart
+        const ctx = document.getElementById('ratingChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Contest Rating',
+                    data: fullRatingData.map(data => data.rating),
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgb(75, 192, 192)',
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Your Contest Ratings Over Time'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                const dataIndex = context.dataIndex;
+                                const rating = context.parsed.y;
+                                const date = labels[dataIndex];
+                                return `Rating: ${rating} on ${date}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Rating'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Contest Date'
+                        }
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error creating rating chart:', error);
+        const chartContainer = document.getElementById('chartContainer');
+        if (chartContainer) {
+            chartContainer.innerHTML = `
+                <p style="color: red; text-align: center;">
+                    Failed to load contest ratings: ${error.message}
+                </p>
+            `;
+        }
+    }
+}
+
+
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('token');
     const contestHistoryBody = document.getElementById('contest-history-body');
@@ -61,6 +178,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             </tr>
         `;
     }
+    await createRatingChart();
 });
 
 function formatDate(dateString) {
