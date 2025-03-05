@@ -109,7 +109,7 @@
 
                 <div class="filter-group">
                     <label for="ratingFilter">Rating:</label>
-                    <select id="ratingFilter" onchange="filterProblems()">
+                    <select id="ratingFilter" onchange="applyFilters()">
                         <option value="all">All Ratings</option>
                         <option value="800">800</option>
                         <option value="900">900</option>
@@ -129,7 +129,7 @@
 
                 <div class="filter-group">
                     <label for="tagFilter">Tags:</label>
-                    <select id="tagFilter" onchange="filterProblems()">
+                    <select id="tagFilter" onchange="applyFilters()">
                         <option value="all">All Tags</option>
                         <option value="implementation">Implementation</option>
                         <option value="dp">Dynamic Programming</option>
@@ -146,7 +146,7 @@
 
                 <div class="filter-group">
                     <label for="statusFilter">Status:</label>
-                    <select id="statusFilter" onchange="filterProblems()">
+                    <select id="statusFilter" onchange="applyFilters()">
                         <option value="all">All</option>
                         <option value="solved">Solved</option>
                         <option value="unsolved">Unsolved</option>
