@@ -35,6 +35,11 @@ body {
     border-radius: 10px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
 }
+.problem-list h2{
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+}
 
 .problem-header {
     display: flex;
@@ -50,17 +55,43 @@ body {
 }
 
 .page-btn {
-    background-color: #16295d;
-    color: white;
+    background-color: hsl(224, 100%, 94%);
     border: none;
+    font-weight: bold;
     padding: 6px 12px;
     border-radius: 5px;
     cursor: pointer;
 }
+#allProblemsBtn {
+    font-weight: bold;
+    border: none;
+    background-color: beige;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: hsl(224, 100%, 94%);
+
+}
+#allProblemsBtn:hover{
+    background-color: hsl(224, 100%, 94%);
+}
+#weakTopicsBtn{
+    font-weight: bold;
+    border: none;
+    background-color: beige;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+#weaktopicBtn:hover{
+    background-color: hsl(224, 100%, 94%);
+}
+
 
 .page-btn:hover {
-    background-color: #01091f;
+    background-color: #a2bbff;
 }
+
 
 .filters-section {
     flex: 1;
@@ -71,6 +102,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
+}
+.filters-section h2{
+    text-align: center;
 }
 
 .filter-group {
@@ -84,32 +118,30 @@ body {
 }
 
 .refresh-btn {
-    background-color: #28a745;
-    color: white;
+    background-color: hsl(224, 100%, 94%);
     border: none;
     padding: 8px 15px;
+    font-weight: bold;
     border-radius: 5px;
     cursor: pointer;
-    font-weight: 500;
 }
 
 .refresh-btn:hover {
-    background-color: #218838;
+    background-color: #a2bbff;
 }
 
 .reset-btn {
-    background-color: #16295d;
-    color: white;
+    background-color: hsl(224, 100%, 94%);
     border: none;
+    font-weight: bold;
     padding: 8px 15px;
     border-radius: 5px;
     cursor: pointer;
-    font-weight: 500;
     margin-top: 5px;
 }
 
 .reset-btn:hover {
-    background-color: #16295d;
+    background-color: #a2bbff;
 }
 
 table {
@@ -124,10 +156,12 @@ th, td {
 }
 
 th {
-    background-color: #16295d;
-    color: white;
+    background-color: hsl(224, 100%, 94%);
     position: sticky;
     top: 0;
+}
+thead tr{
+    border-radius: 10px;
 }
 
 tr:hover {

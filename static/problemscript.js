@@ -18,11 +18,15 @@ function toggleView(section) {
         weakTopics.style.display = "none";
         allBtn.classList.add("active");
         weakBtn.classList.remove("active");
+        weakBtn.style.backgroundColor = "beige";
+        allBtn.style.backgroundColor = "hsl(224, 100%, 94%)";
     } else {
         allProblems.style.display = "none";
         weakTopics.style.display = "block";
         allBtn.classList.remove("active");
         weakBtn.classList.add("active");
+        weakBtn.style.backgroundColor = "hsl(224, 100%, 94%)";
+        allBtn.style.backgroundColor = "beige";
     }
 }
 
