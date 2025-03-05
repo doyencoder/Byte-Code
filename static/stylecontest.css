@@ -115,6 +115,75 @@ footer {
     align-items: center;
 }
 
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.spinner {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    border-top-color: #16295d;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Additional styles for the contests table */
+.contests-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.contests-table thead {
+    background-color: #16295d;
+    color: white;
+}
+
+.contests-table th, 
+.contests-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.contests-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.contests-table tr:hover {
+    background-color: #e6e6e6;
+}
+
+.register-btn {
+    background-color: #16295d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.register-btn:hover {
+    background-color: #1e3a7b;
+}
+
+.error-message {
+    color: red;
+    text-align: center;
+    padding: 20px;
+}
+
 @media screen and (max-width: 768px) {
     .card-container {
         flex-direction: column;

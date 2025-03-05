@@ -476,6 +476,64 @@ router.get("/contest-history/:handle", authMiddleware, async (req, res) => {
     }
 });
 
+// Route to fetch upcoming Codeforces contests
+router.get("/upcoming-contests", authMiddleware, async (req, res) => {
+    try {
+        // Fetch contests from Codeforces API
+        const response = await axios.get('https://codeforces.com/api/contest.list');
+
+        // Check if the API response is successful
+        if (response.data.status !== "OK") {
+            return res.status(400).json({ error: "Failed to fetch contests from Codeforces" });
+        }
+
+        // First, slice to get the first 10 contests
+        const first10Contests = response.data.result.slice(0, 10);
+
+        // Now filter these 10 contests to find upcoming ones
+        const upcomingContests = first10Contests
+            .filter(contest => {
+                // Convert start time to current time difference
+                const currentTime = Math.floor(Date.now() / 1000);
+                const startTime = contest.startTimeSeconds;
+
+                // Conditions for an upcoming contest:
+                // 1. Phase is 'BEFORE' (contest hasn't started)
+                // 2. Start time is in the future
+                // 3. Not a gym contest
+                return (
+                    contest.phase === 'BEFORE' && 
+                    startTime > currentTime && 
+                    contest.type !== 'GYM'
+                );
+            })
+            .sort((a, b) => a.startTimeSeconds - b.startTimeSeconds)
+            .map(contest => ({
+                id: contest.id,
+                name: contest.name,
+                type: contest.type,
+                phase: contest.phase,
+                duration: contest.durationSeconds,
+                startTime: new Date(contest.startTimeSeconds * 1000).toISOString(),
+                relativeTimeSeconds: contest.relativeTimeSeconds
+            }));
+
+        res.json({
+            success: true,
+            totalContests: upcomingContests.length,
+            contests: upcomingContests
+        });
+
+    } catch (error) {
+        console.error("Error fetching upcoming contests:", error.message);
+        res.status(500).json({ 
+            success: false, 
+            error: "Failed to fetch upcoming contests",
+            details: error.message 
+        });
+    }
+});
+
 
 
 
