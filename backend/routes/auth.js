@@ -75,7 +75,7 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/login.html" }),
   (req, res) => {
     // Generate JWT token for the authenticated user
-    const token = jwt.sign({ userId: req.user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ userId: req.user._id }, process.env.JWT_SECRET, { expiresIn: "6h" });
     
     // Redirect to frontend with token (you'll need to handle this on the frontend)
     res.redirect(`/auth-success.html?token=${token}&email=${req.user.email}`);
@@ -138,7 +138,7 @@ router.post("/login", async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "6h" });
 
         res.json({ token, email: user.email });
     } catch (err) {
