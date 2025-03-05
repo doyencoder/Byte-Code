@@ -10,6 +10,7 @@ const codeforcesRoutes = require("./routes/codeforces"); // Import Codeforces ro
 const profileRoutes = require("./routes/profile"); // Import profile routes
 const friendsRoutes = require("./routes/friends"); // Import Friends Routes
 const comparisonRoutes = require("./routes/comparison"); //Import Friends Comparison Routes
+const contestRoutes = require("./routes/contest");
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use("/api/codeforces", codeforcesRoutes); // Register Codeforces route
 app.use("/api/profile", profileRoutes); // Register profile route
 app.use("/api/friends", friendsRoutes); //Aff friends route
 app.use("/api/comparison", comparisonRoutes); //friend comparison route
+app.use("/api/contest", contestRoutes);
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)

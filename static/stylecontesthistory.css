@@ -101,6 +101,16 @@ th, td {
     background-color: #e6e6e6;
 }
 
+.solved {
+    color: green;
+    font-weight: bold;
+}
+
+.attempted {
+    color: orange;
+    font-weight: bold;
+}
+
 /* Responsive Design */
 @media screen and (max-width: 768px) {
     #contest-history-table {
