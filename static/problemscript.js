@@ -79,10 +79,7 @@ async function getCfHandle() {
     }
 }
 
-
-// ------------------------------
 // Weak Topics Problems Functions (Updated)
-// ------------------------------
 
 async function fetchWeakTopicsProblems() {
     try {
@@ -243,10 +240,7 @@ function filterWeakTopicsProblems() {
     displayWeakTopicsProblems();
 }
 
-
-// ------------------------------
 // Existing Functions for All Problems (unchanged)
-// ------------------------------
 
 async function fetchProblems() {
     document.getElementById("loading").style.display = "block";

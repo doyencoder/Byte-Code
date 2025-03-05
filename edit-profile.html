@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="static/favicon.ico">
+    <link rel="icon" type="image/png" href="/static/favicon.ico">
     <title>Edit Profile | ByteCode</title>
     <style>
         #navbar {
@@ -135,20 +135,20 @@
             background-color: #000f1f;
         }
     </style>
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
 
     <div class="main" id="navbar">
         <nav>
-            <span><img width="200px" src="images/logo.png" alt=""></span>
+            <span><img width="200px" src="/images/logo.png" alt=""></span>
             <div class="separation"></div>
             <ul class="nav-links">
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li><a href="contest.html">Contests</a></li>
-                <li><a href="problem.html">Problems</a></li>
-                <li><a href="profile.html" id="contestnav">Profile</a></li>
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/contest.html">Contests</a></li>
+                <li><a href="/problem.html">Problems</a></li>
+                <li><a href="/profile.html" id="contestnav">Profile</a></li>
             </ul>
             <div class="separation"></div>
             <div class="nav-buttons">
@@ -161,10 +161,10 @@
         <div class="mobile-menu">
             <span class="close-btn" onclick="closeMenu()">&#10006;</span> <!-- ✖ Close Button -->
             <ul>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li><a href="contest.html">Contests</a></li>
-                <li><a href="problem.html">Problems</a></li>
-                <li><a href="profile.html">Profile</a></li>
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/contest.html">Contests</a></li>
+                <li><a href="/problem.html">Problems</a></li>
+                <li><a href="/profile.html">Profile</a></li>
             </ul>
             <div class="nav-buttons2">
                 <button id="logoutbtn" style="display: flex;">Logout</button>
@@ -175,11 +175,11 @@
 
     <div class="edit">
         <ul class="edit-links"> <!-- Added class here -->
-            <li><a href="profile.html">Profile</a></li>
-            <li><a href="contesthistory.html">My Contest</a></li>
-            <li><a href="friends.html">Friends</a></li>
-            <li><a href="connect-codeforces.html">Connect Codeforces</a></li>
-            <li><a href="edit-profile.html" id="contestnav2">Edit Profile</a></li> <!-- Fixed text casing -->
+            <li><a href="/profile.html">Profile</a></li>
+            <li><a href="/contesthistory.html">My Contest</a></li>
+            <li><a href="/friends.html">Friends</a></li>
+            <li><a href="/connect-codeforces.html">Connect Codeforces</a></li>
+            <li><a href="/edit-profile.html" id="contestnav2">Edit Profile</a></li> <!-- Fixed text casing -->
         </ul>
     </div>
 
@@ -211,7 +211,7 @@
                 <input type="text" id="institution" name="institution">
 
                 <div class="btn2">
-                    <button onclick="window.location.href='profile.html'" id="back">Back</button>
+                    <button onclick="window.location.href='/profile.html'" id="back">Back</button>
                     <button type="submit" id="save-button">Save</button>
                 </div>
 
@@ -226,14 +226,14 @@
 
             if (!token) {
                 alert("You're not logged in. Please log in first.");
-                window.location.href = "login.html";
+                window.location.href = "/login.html";
                 return;
             }
 
             // Load existing data from the server
             async function loadProfileData() {
                 try {
-                    const response = await fetch("http://localhost:5000/api/profile", {
+                    const response = await fetch("/api/profile", {
                         method: "GET",
                         headers: {
                             "Authorization": token
@@ -272,7 +272,7 @@
 
                 // Save data both to server and localStorage
                 try {
-                    const response = await fetch("http://localhost:5000/api/profile/update", {
+                    const response = await fetch("/api/profile/update", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -293,7 +293,7 @@
                     alert("Profile details updated successfully!");
 
                     // Redirect to profile page
-                    window.location.href = "profile.html";
+                    window.location.href = "/profile.html";
 
                 } catch (error) {
                     console.error("Error updating profile:", error);
@@ -302,7 +302,7 @@
             });
         });
     </script>
-    <script src="static/script.js"></script>
+    <script src="/static/script.js"></script>
 
 
 </body>

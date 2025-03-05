@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to fetch user profile data
     async function fetchUserProfile() {
         try {
-            const response = await fetch("http://127.0.0.1:5000/api/codeforces/fetch-user", {
+            const response = await fetch("/api/codeforces/fetch-user", {
                 method: "GET",
                 headers: {
                     "Authorization": token
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log("Fetching solved probledems for handle:", handle);
 
             // Get problems solved from our backend API
-            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/solved-problems/${handle}`, {
+            const response = await fetch(`/api/codeforces/solved-problems/${handle}`, {
                 method: "GET",
                 headers: {
                     "Authorization": token
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log("Using token:", token);
 
             // Get rating history from our backend API
-            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/rating-history/${handle}`, {
+            const response = await fetch(`/api/codeforces/rating-history/${handle}`, {
                 method: "GET",
                 headers: {
                     "Authorization": token
@@ -436,7 +436,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log("Fetching problem tags for handle:", handle);
 
             // Get problem tags from our backend API
-            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/problem-tags/${handle}`, {
+            const response = await fetch(`/api/codeforces/problem-tags/${handle}`, {
                 method: "GET",
                 headers: {
                     "Authorization": token
@@ -664,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log("Fetching solved problems for handle:", handle);
 
             // Get solved problems from our backend API
-            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/solved-problems/${handle}`, {
+            const response = await fetch(`/api/codeforces/solved-problems/${handle}`, {
                 method: "GET",
                 headers: {
                     "Authorization": token
@@ -894,7 +894,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log("Fetching submission verdicts for handle:", handle);
 
             // Get submission verdicts from our backend API
-            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/submission-verdicts/${handle}`, {
+            const response = await fetch(`/api/codeforces/submission-verdicts/${handle}`, {
                 method: "GET",
                 headers: {
                     "Authorization": token
@@ -1140,7 +1140,7 @@ document.addEventListener('DOMContentLoaded', function () {
             heatmapContainer.innerHTML = '<div class="loading">Loading submission activity...</div>';
 
             // Get submission activity from our backend API
-            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/submission-activity/${handle}`, {
+            const response = await fetch(`/api/codeforces/submission-activity/${handle}`, {
                 method: "GET",
                 headers: {
                     "Authorization": token
@@ -1353,7 +1353,7 @@ document.addEventListener('DOMContentLoaded', function () {
             chartContainer.innerHTML += '<canvas id="weakTopicsChart"></canvas>';
 
             // Fetch weak topics from our backend API
-            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/weak-topics/${handle}`, {
+            const response = await fetch(`/api/codeforces/weak-topics/${handle}`, {
                 method: "GET",
                 headers: {
                     "Authorization": token
@@ -1481,7 +1481,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function fetchRecentContests(handle) {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/codeforces/contest-history/${handle}`, {
+            const response = await fetch(`/api/codeforces/contest-history/${handle}`, {
                 method: "GET",
                 headers: { "Authorization": token }
             });

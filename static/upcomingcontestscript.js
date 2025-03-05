@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Replace with your actual API endpoint
             const token = localStorage.getItem("token");
             
-            const response = await fetch('http://127.0.0.1:5000/api/codeforces/upcoming-contests', {
+            const response = await fetch('/api/codeforces/upcoming-contests', {
                 method: 'GET',
                 headers: {
                     "Authorization": token, 

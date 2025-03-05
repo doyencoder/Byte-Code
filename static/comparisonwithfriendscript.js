@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
     
-            const response = await fetch("http://localhost:5000/api/friends/list", {
+            const response = await fetch("/api/friends/list", {
                 headers: { "Authorization": token }
             });
     
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const token = localStorage.getItem("token");
             console.log("Fetching common contests for:", friendHandle);
     
-            const response = await fetch("http://localhost:5000/api/comparison/common-contests", {
+            const response = await fetch("/api/comparison/common-contests", {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(`Fetching standings for contest ${contestId}...`);
             
             // Fetch current user's data
-            const userresponse = await fetch("http://127.0.0.1:5000/api/codeforces/fetch-user", {
+            const userresponse = await fetch("/api/codeforces/fetch-user", {
                 method: "GET",
                 headers: {
                     "Authorization": token
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const userHandle = userData.handle;
     
             // Fetch contest standings
-            const response = await fetch(`http://localhost:5000/api/comparison/contest-standings?contestId=${contestId}&handles=${friendHandle};${userHandle}`, {
+            const response = await fetch(`/api/comparison/contest-standings?contestId=${contestId}&handles=${friendHandle};${userHandle}`, {
                 headers: { "Authorization": token }
             });
     

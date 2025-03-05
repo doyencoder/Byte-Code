@@ -72,14 +72,14 @@ document.addEventListener("DOMContentLoaded", function () {
   if (googleLoginBtn) {
     googleLoginBtn.addEventListener("click", function(e) {
       e.preventDefault();
-      window.location.href = "http://localhost:5000/api/auth/google";
+      window.location.href = "/api/auth/google";
     });
   }
   
   if (googleSignupBtn) {
     googleSignupBtn.addEventListener("click", function(e) {
       e.preventDefault();
-      window.location.href = "http://localhost:5000/api/auth/google";
+      window.location.href = "/api/auth/google";
     });
   }
 
@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    let response = await fetch("http://127.0.0.1:5000/api/auth/login", {
+    let response = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //   return;
     // }
 
-    let response = await fetch("http://127.0.0.1:5000/api/auth/signup", {
+    let response = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/auth/logout", { method: "POST" });
+      const response = await fetch("/api/auth/logout", { method: "POST" });
 
       if (!response.ok) {
         throw new Error("Failed to logout");

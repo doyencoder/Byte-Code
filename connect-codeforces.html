@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="static/favicon.ico">
+    <link rel="icon" type="image/png" href="/static/favicon.ico">
 
     <title>Connect Codeforces | ByteCode</title>
     <style>
@@ -115,20 +115,20 @@
             background-color: #000d2f;
         }
     </style>
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
 
     <div class="main" id="navbar">
         <nav>
-            <span><img width="200px" src="images/logo.png" alt=""></span>
+            <span><img width="200px" src="/images/logo.png" alt=""></span>
             <div class="separation"></div>
             <ul class="nav-links">
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li><a href="contest.html">Contests</a></li>
-                <li><a href="problem.html">Problems</a></li>
-                <li><a href="profile.html" id="contestnav">Profile</a></li>
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/contest.html">Contests</a></li>
+                <li><a href="/problem.html">Problems</a></li>
+                <li><a href="/profile.html" id="contestnav">Profile</a></li>
             </ul>
             <div class="separation"></div>
             <div class="nav-buttons">
@@ -140,10 +140,10 @@
         <div class="mobile-menu">
             <span class="close-btn" onclick="closeMenu()">&#10006;</span> <!-- ✖ Close Button -->
             <ul>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li><a href="contest.html">Contests</a></li>
-                <li><a href="problem.html">Problems</a></li>
-                <li><a href="profile.html">Profile</a></li>
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/contest.html">Contests</a></li>
+                <li><a href="/problem.html">Problems</a></li>
+                <li><a href="/profile.html">Profile</a></li>
             </ul>
             <div class="nav-buttons2">
                 <button id="logoutbtn" style="display: flex;">Logout</button>
@@ -154,11 +154,11 @@
 
     <div class="edit">
         <ul class="edit-links"> <!-- Added class here -->
-            <li><a href="profile.html">Profile</a></li>
-            <li><a href="contesthistory.html">My Contest</a></li>
-            <li><a href="friends.html">Friends</a></li>
-            <li><a href="connect-codeforces.html" id="contestnav2">Connect Codeforces</a></li>
-            <li><a href="edit-profile.html">Edit Profile</a></li> <!-- Fixed text casing -->
+            <li><a href="/profile.html">Profile</a></li>
+            <li><a href="/contesthistory.html">My Contest</a></li>
+            <li><a href="/friends.html">Friends</a></li>
+            <li><a href="/connect-codeforces.html" id="contestnav2">Connect Codeforces</a></li>
+            <li><a href="/edit-profile.html">Edit Profile</a></li> <!-- Fixed text casing -->
         </ul>
     </div>
 
@@ -187,13 +187,13 @@
             const token = localStorage.getItem("token");
             if (!token) {
                 alert("You're not logged in. Please log in first.");
-                window.location.href = "login.html";
+                window.location.href = "/login.html";
                 return;
             }
 
             try {
                 // Save the handle using token authentication
-                const saveResponse = await fetch("http://localhost:5000/api/codeforces/link", {
+                const saveResponse = await fetch("/api/codeforces/link", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -212,7 +212,7 @@
 
                 // Fetch Codeforces data
                 // console.log(${cfHandle});
-                const fetchResponse = await fetch(`http://localhost:5000/api/codeforces/user/${cfHandle}`, {
+                const fetchResponse = await fetch(`/api/codeforces/user/${cfHandle}`, {
                     headers: {
                         "Authorization": token
                     }
@@ -240,7 +240,7 @@
             }
         }
     </script>
-    <script src="static/script.js"></script>
+    <script src="/static/script.js"></script>
 </body>
 
 </html>

@@ -12,7 +12,12 @@ const friendsRoutes = require("./routes/friends"); // Import Friends Routes
 const comparisonRoutes = require("./routes/comparison"); //ImportComparison Routes
 const contestRoutes = require("./routes/contest");
 
+
 const app = express();
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'base.html'));
+});
 
 // Middleware
 app.use(express.json());

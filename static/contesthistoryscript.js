@@ -7,7 +7,7 @@ async function createRatingChart() {
             return;
         }
 
-        const response = await fetch('http://localhost:5000/api/contest/ratings', {
+        const response = await fetch('/api/contest/ratings', {
             method: 'GET',
             headers: {
                 'Authorization': token,
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const contestData = JSON.parse(currentContestAttempt);
             
             // Send the contest attempt to the backend
-            const saveResponse = await fetch('http://localhost:5000/api/contest/save-attempt', {
+            const saveResponse = await fetch('/api/contest/save-attempt', {
                 method: 'POST',
                 headers: {
                     'Authorization': token,
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        const response = await fetch('http://localhost:5000/api/contest/history', {
+        const response = await fetch('/api/contest/history', {
             method: 'GET',
             headers: {
                 'Authorization': token,

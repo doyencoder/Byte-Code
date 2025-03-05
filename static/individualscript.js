@@ -95,7 +95,7 @@ async function fetchContestProblems() {
         const contestData = JSON.parse(localStorage.getItem('contestData'));
         const ratings = contestData.map(q => q.difficulty);
         // Fetch problems from backend with ratings as comma-separated string
-        const response = await fetch(`http://localhost:5000/api/contest/fetch-problems?numQuestions=${contestData.length}&ratings=${ratings.join(',')}`, {
+        const response = await fetch(`/api/contest/fetch-problems?numQuestions=${contestData.length}&ratings=${ratings.join(',')}`, {
             method: 'GET',
             headers: {
                 'Authorization': token,
@@ -138,7 +138,7 @@ async function createContestAttempt(contestDurationSeconds) {
             solvedProblemsCount: 0
         };
 
-        const response = await fetch("http://localhost:5000/api/contest/save-attempt", {
+        const response = await fetch("/api/contest/save-attempt", {
             method: "POST",
             headers: {
                 'Authorization': token,

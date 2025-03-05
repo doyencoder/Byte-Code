@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Get recent submissions via backend proxy
         let submissions;
         try {
-            const statusResponse = await fetch(`http://localhost:5000/api/contest/user-status?handle=${user.codeforcesHandle}`, {
+            const statusResponse = await fetch(`/api/contest/user-status?handle=${user.codeforcesHandle}`, {
                 headers: { 'Authorization': token }
             });
             submissions = await statusResponse.json();
@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const contestAttemptId = localStorage.getItem("contestAttemptId");
         if (contestAttemptId) {
             try {
-                await fetch(`http://localhost:5000/api/contest/update-problem-status`, {
+                await fetch(`/api/contest/update-problem-status`, {
                     method: "POST",
                     headers: {
                         'Authorization': token,
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
 
     async function fetchUserCodeforcesHandle(token) {
-        const response = await fetch('http://localhost:5000/api/auth/user', {
+        const response = await fetch('/api/auth/user', {
             method: 'GET',
             headers: {
                 'Authorization': token,
@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     async function fetchUserName(token) {
         try {
-          const res = await fetch('http://localhost:5000/api/user/profile', {
+          const res = await fetch('/api/user/profile', {
             headers: { 'Authorization': token }
           });
           const data = await res.json();
@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (!contestAttemptId) return; // no active contest attempt
       
           // 1) Fetch contest history
-          const response = await fetch(`http://localhost:5000/api/contest/history`, {
+          const response = await fetch(`/api/contest/history`, {
             headers: { 'Authorization': token }
           });
           const attempts = await response.json();

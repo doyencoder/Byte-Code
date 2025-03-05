@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="static/favicon.ico">
+    <link rel="icon" type="image/png" href="/static/favicon.ico">
     <title>CP Arena | ByteCode</title>
-    <link rel="stylesheet" href="static/stylefriend.css">
-    <link rel="stylesheet" href="static/styleprofile.css">
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="/static/stylefriend.css">
+    <link rel="stylesheet" href="/static/styleprofile.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="main" id="navbar">
         <nav>
-            <span><img width="200px" src="images/logo.png" alt=""></span>
+            <span><img width="200px" src="/images/logo.png" alt=""></span>
             <div class="separation"></div>
             <ul class="nav-links">
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li><a href="contest.html">Contests</a></li>
-                <li><a href="problem.html">Problems</a></li>
-                <li><a href="profile.html" id="contestnav">Profile</a></li>
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/contest.html">Contests</a></li>
+                <li><a href="/problem.html">Problems</a></li>
+                <li><a href="/profile.html" id="contestnav">Profile</a></li>
             </ul>
             <div class="separation"></div>
             <div class="nav-buttons">
@@ -30,10 +30,10 @@
         <div class="mobile-menu">
             <span class="close-btn" onclick="closeMenu()">&#10006;</span>
             <ul>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li><a href="contest.html">Contests</a></li>
-                <li><a href="problem.html">Problems</a></li>
-                <li><a href="profile.html">Profile</a></li>
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/contest.html">Contests</a></li>
+                <li><a href="/problem.html">Problems</a></li>
+                <li><a href="/profile.html">Profile</a></li>
             </ul>
             <div class="nav-buttons2">
                 <button id="logoutbtn" style="display: flex;">Logout</button>
@@ -43,11 +43,11 @@
 
     <div class="edit">
         <ul class="edit-links"> <!-- Added class here -->
-            <li><a href="profile.html">Profile</a></li>
-            <li><a href="contesthistory.html">My Contest</a></li>
-            <li><a href="friends.html" id="contestnav2">Friends</a></li>
-            <li><a href="connect-codeforces.html">Connect Codeforces</a></li>
-            <li><a href="edit-profile.html">Edit Profile</a></li> <!-- Fixed text casing -->
+            <li><a href="/profile.html">Profile</a></li>
+            <li><a href="/contesthistory.html">My Contest</a></li>
+            <li><a href="/friends.html" id="contestnav2">Friends</a></li>
+            <li><a href="/connect-codeforces.html">Connect Codeforces</a></li>
+            <li><a href="/edit-profile.html">Edit Profile</a></li> <!-- Fixed text casing -->
         </ul>
     </div>
 
@@ -60,7 +60,7 @@
 
         <div class="friends-list">
             <div style="text-align: center; margin-top: 20px;">
-                <button onclick="window.location.href='comparisonwithfriend.html'">Comparison With Friends</button>
+                <button onclick="window.location.href='/comparisonwithfriend.html'">Comparison With Friends</button>
             </div>
             <h2 style="text-align: center; margin-bottom: 20px;">Your Friends</h2>
             <div id="friendsList">
@@ -77,12 +77,12 @@
             const token = localStorage.getItem("token");
             if (!token) {
                 alert("You're not logged in. Redirecting to login page.");
-                window.location.href = "login.html";
+                window.location.href = "/login.html";
                 return;
             }
 
             try {
-                const response = await fetch("http://localhost:5000/api/friends/list", {
+                const response = await fetch("/api/friends/list", {
                     headers: {
                         "Authorization": token
                     }
@@ -111,7 +111,7 @@
 
             const token = localStorage.getItem("token");
             try {
-                const response = await fetch("http://localhost:5000/api/friends/add", {
+                const response = await fetch("/api/friends/add", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -139,7 +139,7 @@
         async function removeFriend(handle) {
             const token = localStorage.getItem("token");
             try {
-                const response = await fetch(`http://localhost:5000/api/friends/remove/${handle}`, {
+                const response = await fetch(`/api/friends/remove/${handle}`, {
                     method: "DELETE",
                     headers: {
                         "Authorization": token
@@ -190,13 +190,13 @@
             const logoutBtn = document.getElementById("logoutbtn");
             logoutBtn.addEventListener("click", async function () {
                 try {
-                    const response = await fetch("http://127.0.0.1:5000/api/auth/logout", { method: "POST" });
+                    const response = await fetch("/api/auth/logout", { method: "POST" });
                     if (!response.ok) {
                         throw new Error("Failed to logout");
                     }
                     localStorage.removeItem("token");
                     alert("You have been logged out!");
-                    window.location.href = "base.html";
+                    window.location.href = "/base.html";
                 } catch (error) {
                     console.error("Logout failed", error);
                     alert("Error logging out. Please try again.");
@@ -204,6 +204,6 @@
             });
         });
     </script>
-    <script src="static/script.js"></script>
+    <script src="/static/script.js"></script>
 </body>
 </html>
