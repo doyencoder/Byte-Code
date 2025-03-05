@@ -166,7 +166,15 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  logoutBtn.addEventListener("click", async function () {
+  logoutBtn.addEventListener("click", async function (event) {
+    event.preventDefault();
+
+    // Show a confirmation dialog
+    const sure = confirm("Are you sure you want to quit?");
+    if (!sure) {
+      // If user clicks "Cancel", do nothing
+      return;
+    }
     try {
       const response = await fetch("http://127.0.0.1:5000/api/auth/logout", { method: "POST" });
 
@@ -175,7 +183,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       localStorage.removeItem("token");  // Clear JWT
-      alert("You have been logged out!");
       window.location.href = "base.html"; // Redirect
 
     } catch (error) {

@@ -212,22 +212,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initial load of friends list
     fetchFriendsList();
-
-    
-
-    // Logout functionality
-    document.getElementById("logoutbtn").addEventListener("click", async function () {
-        try {
-            const response = await fetch("http://127.0.0.1:5000/api/auth/logout", { method: "POST" });
-            if (!response.ok) {
-                throw new Error("Failed to logout");
-            }
-            localStorage.removeItem("token");
-            alert("You have been logged out!");
-            window.location.href = "base.html";
-        } catch (error) {
-            console.error("Logout failed", error);
-            alert("Error logging out. Please try again.");
-        }
-    });
 });

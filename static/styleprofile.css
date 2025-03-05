@@ -120,7 +120,7 @@
 .info-box {
     width: 30vw;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.09);
-    background:  #f5f7ff;
+    background:  hsl(224, 100%, 94%);
     color: #00154e;
     padding: 10px;
     border-radius: 5px;
@@ -154,7 +154,7 @@
 }
 
 .cf-stat-item {
-    background-color: #f5f7ff;
+    background-color: hsl(224, 100%, 94%);
     padding: 10px;
     border-radius: 8px;
     display: flex;
