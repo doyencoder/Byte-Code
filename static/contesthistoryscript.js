@@ -119,6 +119,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('token');
     const contestHistoryBody = document.getElementById('contest-history-body');
 
+    // Check if there's a recent contest attempt in localStorage to save
+    const currentContestAttempt = localStorage.getItem('currentContestAttempt');
+    if (currentContestAttempt) {
+        try {
+            const contestData = JSON.parse(currentContestAttempt);
+            
+            // Send the contest attempt to the backend
+            const saveResponse = await fetch('http://localhost:5000/api/contest/save-attempt', {
+                method: 'POST',
+                headers: {
+                    'Authorization': token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(contestData)
+            });
+
+            if (saveResponse.ok) {
+                // Remove the stored contest attempt after successful save
+                localStorage.removeItem('currentContestAttempt');
+            }
+        } catch (error) {
+            console.error('Error saving contest attempt:', error);
+        }
+    }
+
     if (!token) {
         alert('You are not logged in. Redirecting to login page.');
         window.location.href = 'login.html';
@@ -181,6 +206,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     await createRatingChart();
 });
 
+
+
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-GB', {
@@ -190,8 +217,10 @@ function formatDate(dateString) {
     });
 }
 
-function formatDuration(durationInMinutes) {
-    return `${(durationInMinutes / 60).toFixed(1)} hr`;
+function formatDuration(durationInSeconds) {
+    // Convert seconds to minutes
+    const minutes = Math.round(durationInSeconds / 60);
+    return `${minutes.toFixed(1)} mins`;
 }
 
 function renderProblemColumns(problems) {

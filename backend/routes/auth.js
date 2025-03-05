@@ -84,14 +84,15 @@ router.get(
 
 router.get("/user", authMiddleware, async (req, res) => {
   try {
-      const user = await User.findById(req.user.id).select("codeforcesHandle");
-      if (!user) {
-          return res.status(404).json({ error: "User not found" });
-      }
-      res.json({ codeforcesHandle: user.codeforcesHandle });
+    // Example: using req.user.userId or req.user.id, depending on how you set it up
+    const user = await User.findById(req.user.userId).select("codeforcesHandle");
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json({ codeforcesHandle: user.codeforcesHandle });
   } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

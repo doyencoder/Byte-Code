@@ -9,7 +9,7 @@ const authRoutes = require("./routes/auth");
 const codeforcesRoutes = require("./routes/codeforces"); // Import Codeforces routes
 const profileRoutes = require("./routes/profile"); // Import profile routes
 const friendsRoutes = require("./routes/friends"); // Import Friends Routes
-const comparisonRoutes = require("./routes/comparison"); //Import Friends Comparison Routes
+const comparisonRoutes = require("./routes/comparison"); //ImportComparison Routes
 const contestRoutes = require("./routes/contest");
 
 const app = express();
