@@ -16,8 +16,9 @@ const contestRoutes = require("./routes/contest");
 const app = express();
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'base.html'));
+    res.sendFile(path.join(__dirname, '..', 'base.html'));
 });
+  
 
 // Middleware
 app.use(express.json());
