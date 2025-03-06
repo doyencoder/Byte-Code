@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Auto-end contest if all problems solved
         if (solvedCount === fetchedProblems.length && fetchedProblems.length > 0) {
             alert("Congratulations! You have solved all the problems. The contest will now end.");
-            endContest();
+            window.location.href = 'contesthistory.html';
         }
 
         displayICPCLeaderboard();
@@ -279,7 +279,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (remainingTime > 0) {
             const confirmExit = confirm("Are you sure you want to end the contest? All progress will be saved.");
             if (confirmExit) {
-                endContest();
+                window.location.href = 'contesthistory.html';
                 event.preventDefault();
                 return false;
             } else {
@@ -323,5 +323,5 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     
     // Periodically check statuses every minute
-    setInterval(reloadAndUpdateStatus, 10000);
+    setInterval(reloadAndUpdateStatus, 80000);
 });
