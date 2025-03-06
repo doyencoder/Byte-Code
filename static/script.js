@@ -40,6 +40,49 @@ if (urlParams.get("signup") === "true") {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+
+  function updateAuthDisplay() {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      // Token is active: Hide login, signup, and get started buttons
+      // For the main navigation area
+      const loginBtn = document.querySelector(".nav-buttons .login");
+      const signupBtn = document.querySelector(".nav-buttons .signup");
+      const getStartedBtn = document.querySelector(".hero .btn");
+      if (loginBtn) loginBtn.style.display = "none";
+      if (signupBtn) signupBtn.style.display = "none";
+      if (getStartedBtn) getStartedBtn.style.display = "none";
+
+      // For the mobile menu buttons
+      const mobileButtons = document.querySelector(".nav-buttons2");
+      if (mobileButtons) mobileButtons.style.display = "none";
+
+      // Show logout button
+      const logoutBtn = document.getElementById("logoutbtn");
+      if (logoutBtn) logoutBtn.style.display = "flex";
+    } else {
+      // Token is not active: Show login, signup, and get started buttons
+      const loginBtn = document.querySelector(".nav-buttons .login");
+      const signupBtn = document.querySelector(".nav-buttons .signup");
+      const getStartedBtn = document.querySelector(".hero .btn");
+      if (loginBtn) loginBtn.style.display = "block";
+      if (signupBtn) signupBtn.style.display = "block";
+      if (getStartedBtn) getStartedBtn.style.display = "inline-block";
+
+      // For the mobile menu buttons
+      const mobileButtons = document.querySelector(".nav-buttons2");
+      if (mobileButtons) mobileButtons.style.display = "block";
+
+      // Hide logout button
+      const logoutBtn = document.getElementById("logoutbtn");
+      if (logoutBtn) logoutBtn.style.display = "none";
+    }
+  }
+
+  // Initial check on page load
+  updateAuthDisplay();
+
   // Check if redirected from Google OAuth with token in URL
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get("token");
@@ -134,10 +177,10 @@ document.addEventListener("DOMContentLoaded", function () {
       alert("Please enter a valid email address (e.g., user@example.com)!");
       return;
     }
-    // if (!isValidPassword(password)) {
-    //   alert("Password must be at least 8 characters long, include one uppercase, one lowercase, one digit, and one special character (@, #, $, etc.)");
-    //   return;
-    // }
+    if (!isValidPassword(password)) {
+      alert("Password must be at least 8 characters long, include one uppercase, one lowercase, one digit, and one special character (@, #, $, etc.)");
+      return;
+    }
 
     let response = await fetch("/api/auth/signup", {
       method: "POST",
