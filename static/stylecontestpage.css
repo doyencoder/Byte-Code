@@ -121,6 +121,10 @@ tr:last-child td:last-child {
     background-color: #f1f1ff;
 }
 
+.zero h2{
+    color: #16295d;
+}
+
 /* Wrap the leaderboard in a white box, just like #contest-container */
 #leaderboard-box {
     width: 90%;
