@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: "http://localhost:5000", // Update this to match your frontend URL
+  origin: "https://byte-code.onrender.com", // Update this to match your frontend URL
   credentials: true
 }));
 

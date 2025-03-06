@@ -14,7 +14,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID, // Add these to your .env file
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/api/auth/google/callback",
+      callbackURL: "https://byte-code.onrender.com/api/auth/google/callback",
       passReqToCallback: true
     },
     async (req, accessToken, refreshToken, profile, done) => {
