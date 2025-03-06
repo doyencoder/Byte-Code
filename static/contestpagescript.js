@@ -323,5 +323,5 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     
     // Periodically check statuses every minute
-    setInterval(reloadAndUpdateStatus, 80000);
+    setInterval(reloadAndUpdateStatus, 8000);
 });
